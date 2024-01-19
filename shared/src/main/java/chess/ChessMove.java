@@ -50,6 +50,17 @@ public class ChessMove {
 
     @Override
     public boolean equals(Object obj) {
-        return super.equals(obj);
+        if(obj == null) {
+            return false;
+        }
+        if(obj == this) {
+            return true;
+        }
+        if(obj.getClass() != obj.getClass()) {
+            return false;
+        }
+
+        ChessMove other = (ChessMove) obj;
+        return (startPosition.equals(other.getStartPosition()) && endPosition.equals(other.getEndPosition()));
     }
 }

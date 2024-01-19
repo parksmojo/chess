@@ -11,7 +11,12 @@ import java.util.Collection;
  */
 public class ChessPiece {
 
+    private final ChessGame.TeamColor color;
+    private final PieceType type;
+
     public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type) {
+        this.color = pieceColor;
+        this.type = type;
     }
 
     /**
@@ -30,14 +35,14 @@ public class ChessPiece {
      * @return Which team this chess piece belongs to
      */
     public ChessGame.TeamColor getTeamColor() {
-        throw new RuntimeException("Not implemented");
+        return this.color;
     }
 
     /**
      * @return which type of chess piece this piece is
      */
     public PieceType getPieceType() {
-        throw new RuntimeException("Not implemented");
+        return this.type;
     }
 
     /**
@@ -49,5 +54,21 @@ public class ChessPiece {
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
         return new ArrayList<>();
+    }
+
+    @Override
+    public String toString() {
+        return "ChessPiece{" + "color=" + color + ", type=" + type + '}';
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        // Checks basic differences
+        if(obj == null) {return false;}
+        if(obj == this) {return true;}
+        if(obj.getClass() != obj.getClass()) {return false;}
+
+        ChessPiece other = (ChessPiece) obj;
+        return((this.color == other.getTeamColor()) && (this.type == other.getPieceType()));
     }
 }
