@@ -7,7 +7,7 @@ import java.util.HashSet;
 public class KnightMovesCalculator extends PieceMoveCalculator {
     @Override
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
-        HashSet<ChessMove> moves = new HashSet<ChessMove>();
+        HashSet<ChessMove> moves = new HashSet<>();
         int myRow = myPosition.getRow();
         int myCol = myPosition.getColumn();
 
