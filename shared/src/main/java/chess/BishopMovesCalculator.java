@@ -18,9 +18,13 @@ public class BishopMovesCalculator extends PieceMoveCalculator{
 
     private void f0(ChessBoard board, HashSet<ChessMove> moves, ChessPosition piecePos, ChessPosition myPos, int x, int y){
         ChessPosition next = new ChessPosition(myPos.getRow() + x, myPos.getColumn() + y);
-        if(validMove(board, piecePos, next)) {
+        if(validMove(board, piecePos, next) && !alreadyCaptured(board, piecePos, myPos)) {
             f0(board, moves, piecePos, next, x, y);
             moves.add(new ChessMove(piecePos, next, null));
         }
+    }
+
+    private boolean alreadyCaptured(ChessBoard board, ChessPosition piecePos, ChessPosition checkPos){
+        return !checkPos.equals(piecePos) && board.getPiece(checkPos) != null;
     }
 }
