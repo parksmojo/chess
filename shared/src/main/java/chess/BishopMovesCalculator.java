@@ -1,0 +1,26 @@
+package chess;
+
+import java.util.Collection;
+import java.util.HashSet;
+
+public class BishopMovesCalculator extends PieceMoveCalculator{
+    @Override
+    public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
+        HashSet<ChessMove> moves = new HashSet<>();
+
+        f0(board, moves, myPosition, myPosition, 1, 1);
+        f0(board, moves, myPosition, myPosition, 1, -1);
+        f0(board, moves, myPosition, myPosition, -1, -1);
+        f0(board, moves, myPosition, myPosition, -1, 1);
+
+        return moves;
+    }
+
+    private void f0(ChessBoard board, HashSet<ChessMove> moves, ChessPosition piecePos, ChessPosition myPos, int x, int y){
+        ChessPosition next = new ChessPosition(myPos.getRow() + x, myPos.getColumn() + y);
+        if(validMove(board, piecePos, next)) {
+            f0(board, moves, piecePos, next, x, y);
+            moves.add(new ChessMove(piecePos, next, null));
+        }
+    }
+}

@@ -16,7 +16,7 @@ public class ChessPosition {
     }
 
     public boolean inBounds(){
-        return row <= 7 && row >= 0 && col <= 7 && col >= 0;
+        return row <= 8 && row >= 1 && col <= 8 && col >= 1;
     }
 
     /**
@@ -34,6 +34,8 @@ public class ChessPosition {
     public int getColumn() {
         return col;
     }
+
+
 
     @Override
     public int hashCode() {
