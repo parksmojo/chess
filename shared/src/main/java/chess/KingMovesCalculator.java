@@ -3,33 +3,25 @@ package chess;
 import java.util.Collection;
 import java.util.HashSet;
 
-public class KingMovesCalculator implements PieceMoveCalculator {
+public class KingMovesCalculator extends PieceMoveCalculator {
     @Override
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
         HashSet<ChessMove> moves = new HashSet<ChessMove>();
-        int pieceRow = myPosition.getRow();
-        int pieceCol = myPosition.getColumn();
-        ChessGame.TeamColor myTeam = board.getPiece(myPosition).getTeamColor();
+        int myRow = myPosition.getRow();
+        int myCol = myPosition.getColumn();
 
         // Loops through every square immediately around the piece
         for(int x = -1; x <= 1; x++){
             for(int y = -1; y <= 1; y++){
-                int newRow = pieceRow + x;
-                int newCol = pieceCol + y;
-                // Staying in place is not an option
-                if(x == 0 && y == 0){continue;}
-                // Leaving the board is not an option
-                if(newRow > 8 || newRow < 1 || newCol > 8 || newCol < 1){continue;}
-                // Checking to see if there's another piece in the way
-                if(board.getPiece(new ChessPosition(newRow,newCol)) != null){
-                    // Is that piece on my team?
-                    if(board.getPiece(new ChessPosition(newRow,newCol)).getTeamColor().equals(myTeam)){
-                        continue;
-                    }
+                ChessPosition newPos = new ChessPosition(myRow + x, myCol + y);
+
+                if(validMove(board,myPosition,newPos)){
+                    moves.add(new ChessMove(myPosition,newPos,null));
                 }
-                moves.add(new ChessMove(myPosition,new ChessPosition(newRow, newCol),null));
+
             }
         }
+
         return moves;
     }
 }
