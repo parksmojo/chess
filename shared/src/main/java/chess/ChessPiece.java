@@ -52,7 +52,14 @@ public class ChessPiece {
      * @return Collection of valid moves
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
-        return new BishopMovesCalculator().pieceMoves(board, myPosition);
+        return switch (board.getPiece(myPosition).getPieceType()) {
+            case KING -> new KingMovesCalculator().pieceMoves(board, myPosition);
+            case QUEEN -> new QueenMovesCalculator().pieceMoves(board, myPosition);
+            case BISHOP -> new BishopMovesCalculator().pieceMoves(board, myPosition);
+            case KNIGHT -> new KnightMovesCalculator().pieceMoves(board, myPosition);
+            case ROOK -> new RookMovesCalculator().pieceMoves(board, myPosition);
+            case PAWN -> new PawnMovesCalculator().pieceMoves(board, myPosition);
+        };
     }
 
     @Override
