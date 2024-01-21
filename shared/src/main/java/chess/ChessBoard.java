@@ -41,6 +41,74 @@ public class ChessBoard {
      * (How the game of chess normally starts)
      */
     public void resetBoard() {
-        throw new RuntimeException("Not implemented");
+        for(int i = 0; i < 8; i++){
+            for(int j = 0; j < 8; j++){
+                squares[i][j] = null;
+            }
+        }
+
+        // White pieces
+        ChessGame.TeamColor color = ChessGame.TeamColor.WHITE;
+        int row = 1;
+        addPiece(new ChessPosition(row,1),new ChessPiece(color, ChessPiece.PieceType.ROOK));
+        addPiece(new ChessPosition(row,2),new ChessPiece(color, ChessPiece.PieceType.KNIGHT));
+        addPiece(new ChessPosition(row,3),new ChessPiece(color, ChessPiece.PieceType.BISHOP));
+        addPiece(new ChessPosition(row,4),new ChessPiece(color, ChessPiece.PieceType.QUEEN));
+        addPiece(new ChessPosition(row,5),new ChessPiece(color, ChessPiece.PieceType.KING));
+        addPiece(new ChessPosition(row,6),new ChessPiece(color, ChessPiece.PieceType.BISHOP));
+        addPiece(new ChessPosition(row,7),new ChessPiece(color, ChessPiece.PieceType.KNIGHT));
+        addPiece(new ChessPosition(row,8),new ChessPiece(color, ChessPiece.PieceType.ROOK));
+        for(int i = 1; i < 9; i++){
+            addPiece(new ChessPosition(2,i),new ChessPiece(color, ChessPiece.PieceType.PAWN));
+        }
+
+        // Black pieces
+        color = ChessGame.TeamColor.BLACK;
+        row = 8;
+        addPiece(new ChessPosition(row,1),new ChessPiece(color, ChessPiece.PieceType.ROOK));
+        addPiece(new ChessPosition(row,2),new ChessPiece(color, ChessPiece.PieceType.KNIGHT));
+        addPiece(new ChessPosition(row,3),new ChessPiece(color, ChessPiece.PieceType.BISHOP));
+        addPiece(new ChessPosition(row,4),new ChessPiece(color, ChessPiece.PieceType.QUEEN));
+        addPiece(new ChessPosition(row,5),new ChessPiece(color, ChessPiece.PieceType.KING));
+        addPiece(new ChessPosition(row,6),new ChessPiece(color, ChessPiece.PieceType.BISHOP));
+        addPiece(new ChessPosition(row,7),new ChessPiece(color, ChessPiece.PieceType.KNIGHT));
+        addPiece(new ChessPosition(row,8),new ChessPiece(color, ChessPiece.PieceType.ROOK));
+        for(int i = 1; i < 9; i++){
+            addPiece(new ChessPosition(7,i),new ChessPiece(color, ChessPiece.PieceType.PAWN));
+        }
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return hashCode() == obj.hashCode();
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 0;
+        for(int i = 0; i < 8; i++){
+            for(int j = 0; j < 8; j++){
+                if(squares[i][j] != null){
+                    hash += i * j * squares[i][j].hashCode();
+                }
+                else {
+                    hash += 1;
+                }
+            }
+        }
+        return hash;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder output = new StringBuilder("ChessBoard{");
+        for(int i = 1; i < 9; i++){
+            for(int j = 1; j < 9; j++){
+                ChessPosition pos = new ChessPosition(i, j);
+                if(getPiece(pos) == null) continue;
+                output.append(getPiece(pos)).append(",");
+            }
+        }
+        return output.toString();
     }
 }
