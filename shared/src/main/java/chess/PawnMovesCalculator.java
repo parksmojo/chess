@@ -22,7 +22,7 @@ public class PawnMovesCalculator extends PieceMoveCalculator {
 
             ChessPosition step = new ChessPosition(myRow + 1, myCol);
             ChessPosition jump = new ChessPosition(myRow + 2, myCol);
-            if(validMove(board,myPosition,step) && board.getPiece(step) == null){
+            if(isValidMove(board,myPosition,step) && board.getPiece(step) == null){
                 if(promote){
                     for(ChessPiece.PieceType type : promotetype){
                         moves.add(new ChessMove(myPosition,step,type));
@@ -32,13 +32,13 @@ public class PawnMovesCalculator extends PieceMoveCalculator {
                     moves.add(new ChessMove(myPosition,step,null));
                 }
 
-                if(firstMove && validMove(board,myPosition,jump) && board.getPiece(jump) == null){
+                if(firstMove && isValidMove(board,myPosition,jump) && board.getPiece(jump) == null){
                     moves.add(new ChessMove(myPosition,jump, null));
                 }
             }
 
             ChessPosition[] diagonal = {new ChessPosition(myRow + 1, myCol - 1),new ChessPosition(myRow + 1, myCol + 1)};
-            if(validMove(board,myPosition,diagonal[0]) && board.getPiece(diagonal[0]) != null){
+            if(isValidMove(board,myPosition,diagonal[0]) && board.getPiece(diagonal[0]) != null){
                 if(promote){
                     for(ChessPiece.PieceType type : promotetype){
                         moves.add(new ChessMove(myPosition,diagonal[0],type));
@@ -48,7 +48,7 @@ public class PawnMovesCalculator extends PieceMoveCalculator {
                     moves.add(new ChessMove(myPosition,diagonal[0],null));
                 }
             }
-            if(validMove(board,myPosition,diagonal[1]) && board.getPiece(diagonal[1]) != null){
+            if(isValidMove(board,myPosition,diagonal[1]) && board.getPiece(diagonal[1]) != null){
                 if(promote){
                     for(ChessPiece.PieceType type : promotetype){
                         moves.add(new ChessMove(myPosition,diagonal[1],type));
@@ -69,7 +69,7 @@ public class PawnMovesCalculator extends PieceMoveCalculator {
 
             ChessPosition step = new ChessPosition(myRow - 1, myCol);
             ChessPosition jump = new ChessPosition(myRow - 2, myCol);
-            if(validMove(board,myPosition,step) && board.getPiece(step) == null){
+            if(isValidMove(board,myPosition,step) && board.getPiece(step) == null){
                 if(promote){
                     for(ChessPiece.PieceType type : promotetype){
                         moves.add(new ChessMove(myPosition,step,type));
@@ -79,13 +79,13 @@ public class PawnMovesCalculator extends PieceMoveCalculator {
                     moves.add(new ChessMove(myPosition,step,null));
                 }
 
-                if(firstMove && validMove(board,myPosition,jump) && board.getPiece(jump) == null){
+                if(firstMove && isValidMove(board,myPosition,jump) && board.getPiece(jump) == null){
                     moves.add(new ChessMove(myPosition,jump, null));
                 }
             }
 
             ChessPosition[] diagonal = {new ChessPosition(myRow - 1, myCol - 1),new ChessPosition(myRow - 1, myCol + 1)};
-            if(validMove(board,myPosition,diagonal[0]) && board.getPiece(diagonal[0]) != null){
+            if(isValidMove(board,myPosition,diagonal[0]) && board.getPiece(diagonal[0]) != null){
                 if(promote){
                     for(ChessPiece.PieceType type : promotetype){
                         moves.add(new ChessMove(myPosition,diagonal[0],type));
@@ -95,7 +95,7 @@ public class PawnMovesCalculator extends PieceMoveCalculator {
                     moves.add(new ChessMove(myPosition,diagonal[0],null));
                 }
             }
-            if(validMove(board,myPosition,diagonal[1]) && board.getPiece(diagonal[1]) != null){
+            if(isValidMove(board,myPosition,diagonal[1]) && board.getPiece(diagonal[1]) != null){
                 if(promote){
                     for(ChessPiece.PieceType type : promotetype){
                         moves.add(new ChessMove(myPosition,diagonal[1],type));

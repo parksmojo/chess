@@ -22,7 +22,7 @@ public class KnightMovesCalculator extends PieceMoveCalculator {
         for(int x : options.keySet()){
             for(int y : options.get(x)){
                 ChessPosition newPos = new ChessPosition(myRow + x, myCol + y);
-                if(validMove(board,myPosition,newPos)){
+                if(isValidMove(board,myPosition,newPos)){
                     moves.add(new ChessMove(myPosition,newPos,null));
                 }
             }

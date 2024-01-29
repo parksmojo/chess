@@ -15,7 +15,7 @@ public class KingMovesCalculator extends PieceMoveCalculator {
             for(int y = -1; y <= 1; y++){
                 ChessPosition newPos = new ChessPosition(myRow + x, myCol + y);
 
-                if(validMove(board,myPosition,newPos)){
+                if(isValidMove(board,myPosition,newPos)){
                     moves.add(new ChessMove(myPosition,newPos,null));
                 }
 

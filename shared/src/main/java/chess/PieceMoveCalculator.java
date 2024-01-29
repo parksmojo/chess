@@ -1,10 +1,11 @@
 package chess;
 
 import java.util.Collection;
+import java.util.HashSet;
 
 abstract class PieceMoveCalculator {
     abstract public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition);
-    boolean validMove(ChessBoard board, ChessPosition myPosition, ChessPosition newPos){
+    boolean isValidMove(ChessBoard board, ChessPosition myPosition, ChessPosition newPos){
         ChessGame.TeamColor myTeam = board.getPiece(myPosition).getTeamColor();
 
         // Staying in place is not an option
@@ -23,5 +24,17 @@ abstract class PieceMoveCalculator {
             return false;
         }
         return true;
+    }
+
+    void recursiveSearch(ChessBoard board, HashSet<ChessMove> moves, ChessPosition piecePos, ChessPosition myPos, int x, int y){
+        ChessPosition next = new ChessPosition(myPos.getRow() + x, myPos.getColumn() + y);
+        if(isValidMove(board, piecePos, next) && !isCapturing(board, piecePos, myPos)) {
+            recursiveSearch(board, moves, piecePos, next, x, y);
+            moves.add(new ChessMove(piecePos, next, null));
+        }
+    }
+
+    private boolean isCapturing(ChessBoard board, ChessPosition piecePos, ChessPosition checkPos){
+        return !checkPos.equals(piecePos) && board.getPiece(checkPos) != null;
     }
 }
