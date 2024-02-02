@@ -47,7 +47,16 @@ public class ChessMove {
 
     @Override
     public String toString() {
-        return String.format("ChessMove{%s-%s}", startPosition, endPosition);
+        String promotion;
+        switch (promotionPiece){
+            case QUEEN -> promotion = "(Q)";
+            case ROOK -> promotion = "(R)";
+            case BISHOP -> promotion = "(B)";
+            case KNIGHT -> promotion = "(K)";
+            case null, default -> promotion = "";
+        }
+        return String.format("%s->%s %s", startPosition, endPosition, promotion);
+        //return String.format("%s->%s", startPosition, endPosition);
     }
 
     @Override
