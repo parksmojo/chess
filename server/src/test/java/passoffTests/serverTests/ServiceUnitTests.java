@@ -66,4 +66,31 @@ public class ServiceUnitTests {
 
         Assertions.assertNull(loginResult, "Login authorized with incorrect password");
     }
+
+    @Test
+    @DisplayName("Normal Logout")
+    public void logoutSuccess() throws TestException {
+        String username = newUser.username();
+        String password = newUser.password();
+        String email = newUser.email();
+
+        AuthData auth = userService.register(username,password,email);
+        boolean success = userService.logout(auth.authToken());
+
+        Assertions.assertTrue(success, "Logout failed");
+    }
+
+    @Test
+    @DisplayName("Double logout")
+    public void logoutFail() throws TestException {
+        String username = newUser.username();
+        String password = newUser.password();
+        String email = newUser.email();
+
+        AuthData auth = userService.register(username,password,email);
+        userService.logout(auth.authToken());
+        boolean success = userService.logout(auth.authToken());
+
+        Assertions.assertFalse(success, "Repeated successful logouts");
+    }
 }
