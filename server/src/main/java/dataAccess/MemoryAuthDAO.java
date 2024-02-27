@@ -16,7 +16,7 @@ public class MemoryAuthDAO implements AuthDAO{
     }
 
     @Override
-    public boolean validateAuth(String auth) {
+    public AuthData validateAuth(String auth) {
         AuthData authToken = null;
         for(AuthData token : authTokens){
             if(token.authToken().equals(auth)){
@@ -24,19 +24,19 @@ public class MemoryAuthDAO implements AuthDAO{
                 break;
             }
         }
-        return authToken != null;
+        return authToken;
     }
+
+
 
     @Override
     public boolean delAuth(String auth){
-        if(validateAuth(auth)){
-            for(AuthData token : authTokens){
-                if(token.authToken().equals(auth)){
-                    authTokens.remove(token);
-                    return true;
-                }
-            }
+        AuthData authToken = validateAuth(auth);
+        if(validateAuth(auth) != null){
+            authTokens.remove(authToken);
+            return true;
         }
+
         return false;
     }
 
