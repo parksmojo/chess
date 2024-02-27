@@ -51,8 +51,13 @@ public class Server {
     }
 
     private Object clear(Request req, Response res){
-        gameService.clear();
-        res.status(200);
-        return "{}";
+        try {
+            gameService.clear();
+            res.status(200);
+            return "{}";
+        } catch (Exception e){
+            res.status(500);
+            return new Gson().toJson(new FailureResponse("Error: " + e));
+        }
     }
 }
