@@ -156,6 +156,7 @@ public class Server {
     private Object clear(Request req, Response res){
         try {
             gameService.clear();
+            userService.clear();
             res.status(200);
             return "{}";
         } catch (Exception e){

@@ -34,4 +34,9 @@ public class UserService {
     public boolean logout(String authToken){
         return authDAO.delAuth(authToken);
     }
+
+    public void clear(){
+        userDAO.clear();
+        authDAO.clear();
+    }
 }

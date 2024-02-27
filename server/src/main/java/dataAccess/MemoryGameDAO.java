@@ -8,10 +8,12 @@ import java.util.Objects;
 public class MemoryGameDAO implements GameDAO {
     private static ArrayList<GameData> games = new ArrayList<>();
 
+    @Override
     public void clear(){
         games.clear();
     }
 
+    @Override
     public int createGame(String gameName) {
         for(GameData game : games){
             if(Objects.equals(game.gameName(), gameName)){
@@ -29,6 +31,7 @@ public class MemoryGameDAO implements GameDAO {
         return gameID;
     }
 
+    @Override
     public ArrayList<GameData> getGames(){
         return games;
     }
