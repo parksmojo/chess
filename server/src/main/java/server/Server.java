@@ -54,11 +54,17 @@ public class Server {
     private Object login(Request req, Response res){
         try {
             UserData user = new Gson().fromJson(req.body(), UserData.class);
+            if(user == null){
+                res.status(401);
+                return new Gson().toJson(new FailureResponse("unauthorized"));
+            }
+
             AuthData auth = userService.login(user.username(), user.password());
             if(auth == null){
                 res.status(401);
                 return new Gson().toJson(new FailureResponse("unauthorized"));
             }
+
             res.status(200);
             return new Gson().toJson(auth);
         } catch (Exception e){
