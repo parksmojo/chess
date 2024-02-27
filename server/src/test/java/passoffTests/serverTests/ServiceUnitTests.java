@@ -9,6 +9,8 @@ import model.*;
 import service.GameService;
 import service.UserService;
 
+import java.util.ArrayList;
+
 public class ServiceUnitTests {
     UserService userService = new UserService();
     GameService gameService = new GameService();
@@ -139,5 +141,20 @@ public class ServiceUnitTests {
 
         Assertions.assertTrue(gameID1 >= 0, "Invalid gameID given");
         Assertions.assertTrue(gameID2 < 0, "Duplicate game allowed");
+    }
+
+    @Test
+    @Order(10)
+    @DisplayName("List Games")
+    public void listGamesSuccess() throws TestException {
+        String username = registeredUser.username();
+        String password = registeredUser.password();
+
+        AuthData auth = userService.login(username,password);
+
+        ArrayList<GameData> games = gameService.getGames(auth.authToken());
+        System.out.println(games);
+
+        Assertions.assertNotNull(games, "Null collection");
     }
 }
