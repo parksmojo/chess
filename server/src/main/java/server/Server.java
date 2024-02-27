@@ -18,6 +18,7 @@ public class Server {
         Spark.delete("/db", this::clear);
         Spark.post("/user", this::register);
         Spark.post("/session", this::login);
+        Spark.delete("/session", this::logout);
 
         Spark.awaitInitialization();
         return Spark.port();
@@ -47,7 +48,7 @@ public class Server {
 
         } catch (Exception e){
             res.status(500);
-            return new Gson().toJson(new FailureResponse("Error: " + e));
+            return new Gson().toJson(new FailureResponse(e.toString()));
         }
     }
 
@@ -69,7 +70,24 @@ public class Server {
             return new Gson().toJson(auth);
         } catch (Exception e){
             res.status(500);
-            return new Gson().toJson(new FailureResponse("Error: " + e));
+            return new Gson().toJson(new FailureResponse(e.toString()));
+        }
+    }
+
+    private Object logout(Request req, Response res){
+        try {
+            System.out.println(req.headers());
+            String authToken = req.headers("authorization");
+            if(userService.logout(authToken)){
+                res.status(200);
+                return "{}";
+            } else {
+                res.status(401);
+                return new Gson().toJson(new FailureResponse("unauthorized"));
+            }
+        } catch (Exception e){
+            res.status(500);
+            return new Gson().toJson(new FailureResponse(e.toString()));
         }
     }
 
@@ -80,7 +98,7 @@ public class Server {
             return "{}";
         } catch (Exception e){
             res.status(500);
-            return new Gson().toJson(new FailureResponse("Error: " + e));
+            return new Gson().toJson(new FailureResponse(e.toString()));
         }
     }
 }

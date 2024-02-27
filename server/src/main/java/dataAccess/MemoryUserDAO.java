@@ -28,4 +28,20 @@ public class MemoryUserDAO implements UserDAO{
         auths.add(auth);
         return auth;
     }
+
+    public boolean delAuth(String auth){
+        AuthData authToken = null;
+        for(AuthData token : auths){
+            if(token.authToken().equals(auth)){
+                authToken = token;
+                break;
+            }
+        }
+        if(authToken == null){
+            return false;
+        } else {
+            auths.remove(authToken);
+            return true;
+        }
+    }
 }

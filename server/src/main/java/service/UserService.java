@@ -19,11 +19,18 @@ public class UserService {
 
     public AuthData login(String username, String password){
         UserData user = userDAO.getUser(username);
+        if(user == null){
+            return null;
+        }
 
         if(Objects.equals(password, user.password())) {
             return userDAO.createAuth(username);
         } else {
             return null;
         }
+    }
+
+    public boolean logout(String authToken){
+        return userDAO.delAuth(authToken);
     }
 }
