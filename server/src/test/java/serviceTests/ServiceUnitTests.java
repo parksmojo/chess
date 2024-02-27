@@ -163,11 +163,20 @@ public class ServiceUnitTests {
 
     @Test
     @Order(12)
-    @DisplayName("List empty Games")
+    @DisplayName("Join game")
     public void joinGameSuccess() throws TestException {
         int gameID = gameService.makeGame(registeredAuth.authToken(), newGame1);
-        boolean success = gameService.joinGame(registeredAuth.authToken(), ChessGame.TeamColor.BLACK, premadeGame.gameID());
-        System.out.println(premadeGame);
-        Assertions.assertTrue(success, "Join failed");
+        GameData newGame = gameService.joinGame(registeredAuth.authToken(), ChessGame.TeamColor.BLACK, gameID);
+        System.out.println(gameService.findGame(registeredAuth.authToken(), gameID));
+        Assertions.assertNotNull(newGame, "Join failed");
+    }
+
+    @Test
+    @Order(13)
+    @DisplayName("Spot already taken")
+    public void joinGameFailure() throws TestException {
+        GameData newGame = gameService.joinGame(registeredAuth.authToken(), ChessGame.TeamColor.BLACK, premadeGame.gameID());
+        System.out.println(gameService.findGame(registeredAuth.authToken(), premadeGame.gameID()));
+        Assertions.assertNull(newGame, "Joined taken spot");
     }
 }
