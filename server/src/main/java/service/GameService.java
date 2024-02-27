@@ -38,10 +38,10 @@ public class GameService {
         return gameDAO.getGames();
     }
 
-    public boolean joinGame(String auth, ChessGame.TeamColor clientColor, int gameID){
+    public GameData joinGame(String auth, ChessGame.TeamColor clientColor, int gameID){
         AuthData authToken = authDAO.validateAuth(auth);
         if(authToken == null){
-            return false;
+            return null;
         }
 
         return gameDAO.insertUser(gameID,clientColor,authToken.username());

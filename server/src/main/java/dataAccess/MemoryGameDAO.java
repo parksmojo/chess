@@ -52,7 +52,7 @@ public class MemoryGameDAO implements GameDAO {
     }
 
     @Override
-    public boolean insertUser(int gameID, ChessGame.TeamColor clientColor, String username) {
+    public GameData insertUser(int gameID, ChessGame.TeamColor clientColor, String username) {
         GameData gameSpecified = null;
         int gameIndex = -1;
         for(int i = 0; i < games.size(); i++){
@@ -63,7 +63,7 @@ public class MemoryGameDAO implements GameDAO {
             }
         }
         if(gameSpecified == null){
-            return false;
+            return null;
         }
 
         String whiteUsername = gameSpecified.whiteUsername();
@@ -71,13 +71,18 @@ public class MemoryGameDAO implements GameDAO {
         String gameName = gameSpecified.gameName();
         ChessGame game = gameSpecified.game();
 
-        if(clientColor == ChessGame.TeamColor.WHITE){
+        if(clientColor == ChessGame.TeamColor.WHITE && Objects.equals(whiteUsername, "")){
             whiteUsername = username;
-        } else if (clientColor == ChessGame.TeamColor.BLACK) {
+        } else if (clientColor == ChessGame.TeamColor.BLACK && Objects.equals(blackUsername, "")) {
             blackUsername = username;
+        } else if(clientColor == null){
+            return gameSpecified;
+        } else {
+            return null;
         }
 
-        games.set(gameIndex,new GameData(gameID,whiteUsername,blackUsername,gameName,game));
-        return true;
+        GameData newGame = new GameData(gameID,whiteUsername,blackUsername,gameName,game);
+        games.set(gameIndex, newGame);
+        return newGame;
     }
 }
