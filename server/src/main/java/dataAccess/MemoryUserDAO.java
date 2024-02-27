@@ -29,7 +29,7 @@ public class MemoryUserDAO implements UserDAO{
         return auth;
     }
 
-    public boolean delAuth(String auth){
+    public boolean validateAuth(String auth) {
         AuthData authToken = null;
         for(AuthData token : auths){
             if(token.authToken().equals(auth)){
@@ -37,11 +37,18 @@ public class MemoryUserDAO implements UserDAO{
                 break;
             }
         }
-        if(authToken == null){
-            return false;
-        } else {
-            auths.remove(authToken);
-            return true;
+        return authToken != null;
+    }
+
+    public boolean delAuth(String auth){
+        if(validateAuth(auth)){
+            for(AuthData token : auths){
+                if(token.authToken().equals(auth)){
+                    auths.remove(token);
+                    return true;
+                }
+            }
         }
+        return false;
     }
 }
