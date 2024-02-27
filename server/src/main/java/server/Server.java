@@ -17,6 +17,7 @@ public class Server {
         // Register your endpoints and handle exceptions here.
         Spark.delete("/db", this::clear);
         Spark.post("/user", this::register);
+        Spark.post("/session", this::login);
 
         Spark.awaitInitialization();
         return Spark.port();
@@ -44,6 +45,22 @@ public class Server {
             res.status(200);
             return new Gson().toJson(auth);
 
+        } catch (Exception e){
+            res.status(500);
+            return new Gson().toJson(new FailureResponse("Error: " + e));
+        }
+    }
+
+    private Object login(Request req, Response res){
+        try {
+            UserData user = new Gson().fromJson(req.body(), UserData.class);
+            AuthData auth = userService.login(user.username(), user.password());
+            if(auth == null){
+                res.status(401);
+                return new Gson().toJson(new FailureResponse("unauthorized"));
+            }
+            res.status(200);
+            return new Gson().toJson(auth);
         } catch (Exception e){
             res.status(500);
             return new Gson().toJson(new FailureResponse("Error: " + e));

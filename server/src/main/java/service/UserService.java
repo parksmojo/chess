@@ -1,7 +1,8 @@
 package service;
 
 import dataAccess.*;
-import model.AuthData;
+import model.*;
+import java.util.Objects;
 
 public class UserService {
     private final UserDAO userDAO = new MemoryUserDAO();
@@ -14,5 +15,15 @@ public class UserService {
         userDAO.createUser(username,password,email);
 
         return userDAO.createAuth(username);
+    }
+
+    public AuthData login(String username, String password){
+        UserData user = userDAO.getUser(username);
+
+        if(Objects.equals(password, user.password())) {
+            return userDAO.createAuth(username);
+        } else {
+            return null;
+        }
     }
 }
