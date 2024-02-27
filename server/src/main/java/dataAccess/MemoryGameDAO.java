@@ -28,4 +28,8 @@ public class MemoryGameDAO implements GameDAO {
         games.add(newGame);
         return gameID;
     }
+
+    public ArrayList<GameData> getGames(){
+        return games;
+    }
 }

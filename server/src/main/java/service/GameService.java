@@ -1,6 +1,9 @@
 package service;
 
 import dataAccess.*;
+import model.GameData;
+
+import java.util.ArrayList;
 
 public class GameService {
     private final GameDAO gameDAO = new MemoryGameDAO();
@@ -17,5 +20,13 @@ public class GameService {
         }
 
         return gameDAO.createGame(gameName);
+    }
+
+    public ArrayList<GameData> getGames(String authToken){
+        if(!authDAO.validateAuth(authToken)){
+            return null;
+        }
+
+        return gameDAO.getGames();
     }
 }

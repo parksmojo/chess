@@ -5,6 +5,8 @@ import model.*;
 import service.*;
 import spark.*;
 
+import java.util.ArrayList;
+
 public class Server {
     private final GameService gameService = new GameService();
     private final UserService userService = new UserService();
@@ -20,6 +22,7 @@ public class Server {
         Spark.post("/session", this::login);
         Spark.delete("/session", this::logout);
         Spark.post("/game", this::create);
+        Spark.get("/game", this::list);
 
         Spark.awaitInitialization();
         return Spark.port();
@@ -119,6 +122,30 @@ public class Server {
             } else {
                 res.status(200);
                 return new Gson().toJson(new GameIDResponse(gameID));
+            }
+        } catch (Exception e){
+            res.status(500);
+            return new Gson().toJson(new FailureResponse(e.toString()));
+        }
+    }
+
+    private Object list(Request req, Response res){
+        try {
+            String authToken = req.headers("authorization");
+            System.out.println("authToken:" + authToken);
+            if(authToken == null) {
+                res.status(401);
+                return new Gson().toJson(new FailureResponse("unauthorized"));
+            }
+
+            ArrayList<GameData> games = gameService.getGames(authToken);
+            System.out.println(games);
+            if(games != null){
+                res.status(200);
+                return new Gson().toJson(games);
+            } else {
+                res.status(401);
+                return new Gson().toJson(new FailureResponse("unauthorized"));
             }
         } catch (Exception e){
             res.status(500);
