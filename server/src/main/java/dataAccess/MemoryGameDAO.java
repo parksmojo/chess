@@ -31,6 +31,10 @@ public class MemoryGameDAO implements GameDAO {
         return gameID;
     }
 
+    public void setGame(GameData game){
+        games.add(game);
+    }
+
     @Override
     public ArrayList<GameData> getGames(){
         return games;

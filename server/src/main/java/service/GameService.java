@@ -9,7 +9,6 @@ public class GameService {
     private final GameDAO gameDAO = new MemoryGameDAO();
     private final AuthDAO authDAO = new MemoryAuthDAO();
 
-    // TODO: Needs actual implementation
     public void clear(){
         gameDAO.clear();
     }

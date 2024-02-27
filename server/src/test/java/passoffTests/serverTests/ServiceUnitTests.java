@@ -1,9 +1,8 @@
 package passoffTests.serverTests;
 
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Order;
-import org.junit.jupiter.api.Test;
+import chess.ChessGame;
+import dataAccess.MemoryGameDAO;
+import org.junit.jupiter.api.*;
 import passoffTests.testClasses.TestException;
 import model.*;
 import service.GameService;
@@ -14,16 +13,37 @@ import java.util.ArrayList;
 public class ServiceUnitTests {
     UserService userService = new UserService();
     GameService gameService = new GameService();
+    private final MemoryGameDAO gameDAO = new MemoryGameDAO();
     UserData registeredUser = new UserData("ryguy", "pass", "ry@gmail.com");
-    UserData otherUser = new UserData("jon3", "12345", "jon@gmail.com");
+    AuthData registeredAuth;
+    UserData newUser = new UserData("jon3", "12345", "jon@gmail.com");
+    GameData premadeGame = new GameData(1234,"ryguy","jon3","First Game", new ChessGame());
+    String newGame1 = "Second Game";
+    String newGame2 = "Third Game";
+
+    @BeforeEach
+    public void setup() throws TestException {
+        userService.clear();
+        gameService.clear();
+
+        String username = registeredUser.username();
+        String password = registeredUser.password();
+        String email = registeredUser.email();
+
+        //one user already logged in
+        registeredAuth = userService.register(username,password,email);
+
+        //already existing games
+        gameDAO.setGame(premadeGame);
+    }
 
     @Test
     @Order(1)
     @DisplayName("Normal Register")
     public void registerSuccess() throws TestException {
-        String username = registeredUser.username();
-        String password = registeredUser.password();
-        String email = registeredUser.email();
+        String username = newUser.username();
+        String password = newUser.password();
+        String email = newUser.email();
 
         AuthData authResult = userService.register(username,password,email);
 
@@ -62,7 +82,7 @@ public class ServiceUnitTests {
     @DisplayName("Incorrect Password")
     public void loginFail() throws TestException {
         String username = registeredUser.username();
-        String otherPass = otherUser.password();
+        String otherPass = newUser.password();
 
         AuthData loginResult = userService.login(username,otherPass);
 
@@ -73,11 +93,7 @@ public class ServiceUnitTests {
     @Order(5)
     @DisplayName("Normal Logout")
     public void logoutSuccess() throws TestException {
-        String username = registeredUser.username();
-        String password = registeredUser.password();
-
-        AuthData auth = userService.login(username,password);
-        boolean success = userService.logout(auth.authToken());
+        boolean success = userService.logout(registeredAuth.authToken());
 
         Assertions.assertTrue(success, "Logout failed");
     }
@@ -86,26 +102,17 @@ public class ServiceUnitTests {
     @Order(6)
     @DisplayName("Double logout")
     public void logoutFail() throws TestException {
-        String username = registeredUser.username();
-        String password = registeredUser.password();
+        userService.logout(registeredAuth.authToken());
+        boolean success = userService.logout(registeredAuth.authToken());
 
-        AuthData auth = userService.login(username,password);
-        userService.logout(auth.authToken());
-        boolean success = userService.logout(auth.authToken());
-
-        Assertions.assertFalse(success, "Repeated successful logouts");
+        Assertions.assertFalse(success, "Logged out twice");
     }
 
     @Test
     @Order(7)
     @DisplayName("Create Game")
     public void createGameSuccess() throws TestException {
-        String username = registeredUser.username();
-        String password = registeredUser.password();
-
-        AuthData auth = userService.login(username,password);
-
-        int gameID = gameService.makeGame(auth.authToken(), "My Game");
+        int gameID = gameService.makeGame(registeredAuth.authToken(), newGame1);
 
         Assertions.assertTrue(gameID >= 0, "Invalid gameID given");
     }
@@ -114,30 +121,18 @@ public class ServiceUnitTests {
     @Order(8)
     @DisplayName("Create more games")
     public void createMoreSuccess() throws TestException {
-        String username = registeredUser.username();
-        String password = registeredUser.password();
+        int gameID1 = gameService.makeGame(registeredAuth.authToken(), newGame1);
+        int gameID2 = gameService.makeGame(registeredAuth.authToken(), newGame2);
 
-        AuthData auth = userService.login(username,password);
-
-        int gameID1 = gameService.makeGame(auth.authToken(), "My Game1");
-        int gameID2 = gameService.makeGame(auth.authToken(), "My Game2");
-        int gameID3 = gameService.makeGame(auth.authToken(), "My Game3");
-        int gameID4 = gameService.makeGame(auth.authToken(), "My Game4");
-
-        Assertions.assertTrue((gameID1 >= 0) && (gameID2 >= 0) && (gameID3 >= 0) && (gameID4 >= 0), "Invalid gameID given");
+        Assertions.assertTrue((gameID1 > 0) && (gameID2 > 0), "Invalid gameID given");
     }
 
     @Test
     @Order(9)
     @DisplayName("Duplicate Game")
     public void createGameFail() throws TestException {
-        String username = registeredUser.username();
-        String password = registeredUser.password();
-
-        AuthData auth = userService.login(username,password);
-
-        int gameID1 = gameService.makeGame(auth.authToken(), "My Game6");
-        int gameID2 = gameService.makeGame(auth.authToken(), "My Game6");
+        int gameID1 = gameService.makeGame(registeredAuth.authToken(), newGame1);
+        int gameID2 = gameService.makeGame(registeredAuth.authToken(), newGame1);
 
         Assertions.assertTrue(gameID1 >= 0, "Invalid gameID given");
         Assertions.assertTrue(gameID2 < 0, "Duplicate game allowed");
@@ -147,14 +142,22 @@ public class ServiceUnitTests {
     @Order(10)
     @DisplayName("List Games")
     public void listGamesSuccess() throws TestException {
-        String username = registeredUser.username();
-        String password = registeredUser.password();
+        gameService.makeGame(registeredAuth.authToken(), newGame1);
+        gameService.makeGame(registeredAuth.authToken(), newGame2);
 
-        AuthData auth = userService.login(username,password);
-
-        ArrayList<GameData> games = gameService.getGames(auth.authToken());
-        System.out.println(games);
+        ArrayList<GameData> games = gameService.getGames(registeredAuth.authToken());
 
         Assertions.assertNotNull(games, "Null collection");
+    }
+
+    @Test
+    @Order(11)
+    @DisplayName("List empty Games")
+    public void listGamesEmpty() throws TestException {
+        gameService.clear();
+
+        ArrayList<GameData> games = gameService.getGames(registeredAuth.authToken());
+
+        Assertions.assertTrue(games.isEmpty(), "Games survived clear");
     }
 }
