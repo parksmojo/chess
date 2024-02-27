@@ -6,15 +6,18 @@ import java.util.Objects;
 
 public class UserService {
     private final UserDAO userDAO = new MemoryUserDAO();
+    private final AuthDAO authDAO = new MemoryAuthDAO();
 
     public AuthData register(String username, String password, String email){
+        System.out.println("registering");
         if(userDAO.getUser(username) != null){
             return null;
         }
+        System.out.println("its a new user");
 
         userDAO.createUser(username,password,email);
 
-        return userDAO.createAuth(username);
+        return authDAO.createAuth(username);
     }
 
     public AuthData login(String username, String password){
@@ -24,13 +27,13 @@ public class UserService {
         }
 
         if(Objects.equals(password, user.password())) {
-            return userDAO.createAuth(username);
+            return authDAO.createAuth(username);
         } else {
             return null;
         }
     }
 
     public boolean logout(String authToken){
-        return userDAO.delAuth(authToken);
+        return authDAO.delAuth(authToken);
     }
 }
