@@ -9,11 +9,9 @@ public class UserService {
     private final AuthDAO authDAO = new MemoryAuthDAO();
 
     public AuthData register(String username, String password, String email){
-        System.out.println("registering");
         if(userDAO.getUser(username) != null){
             return null;
         }
-        System.out.println("its a new user");
 
         userDAO.createUser(username,password,email);
 

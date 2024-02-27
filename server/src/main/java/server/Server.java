@@ -19,6 +19,7 @@ public class Server {
         Spark.post("/user", this::register);
         Spark.post("/session", this::login);
         Spark.delete("/session", this::logout);
+        Spark.post("/game", this::create);
 
         Spark.awaitInitialization();
         return Spark.port();
@@ -76,7 +77,6 @@ public class Server {
 
     private Object logout(Request req, Response res){
         try {
-            System.out.println(req.headers());
             String authToken = req.headers("authorization");
             if(userService.logout(authToken)){
                 res.status(200);
@@ -84,6 +84,41 @@ public class Server {
             } else {
                 res.status(401);
                 return new Gson().toJson(new FailureResponse("unauthorized"));
+            }
+        } catch (Exception e){
+            res.status(500);
+            return new Gson().toJson(new FailureResponse(e.toString()));
+        }
+    }
+
+    private Object create(Request req, Response res){
+        try {
+            String authToken = req.headers("authorization");
+            System.out.println(authToken);
+            if(authToken == null){
+                res.status(400);
+                return new Gson().toJson(new FailureResponse("bad request"));
+            }
+
+            GameData game = new Gson().fromJson(req.body(), GameData.class);
+            if(game == null || game.gameName() == null){
+                res.status(400);
+                return new Gson().toJson(new FailureResponse("bad request"));
+            }
+
+            String gameName = game.gameName();
+            int gameID = gameService.makeGame(authToken, gameName);
+            System.out.println(gameID);
+
+            if(gameID == -1){
+                res.status(401);
+                return new Gson().toJson(new FailureResponse("unauthorized"));
+            } else if (gameID <= -2 || gameID == 0) {
+                res.status(400);
+                return new Gson().toJson(new FailureResponse("bad request"));
+            } else {
+                res.status(200);
+                return new Gson().toJson(new GameIDResponse(gameID));
             }
         } catch (Exception e){
             res.status(500);
