@@ -160,4 +160,14 @@ public class ServiceUnitTests {
 
         Assertions.assertTrue(games.isEmpty(), "Games survived clear");
     }
+
+    @Test
+    @Order(12)
+    @DisplayName("List empty Games")
+    public void joinGameSuccess() throws TestException {
+        int gameID = gameService.makeGame(registeredAuth.authToken(), newGame1);
+        boolean success = gameService.joinGame(registeredAuth.authToken(), ChessGame.TeamColor.BLACK, premadeGame.gameID());
+        System.out.println(premadeGame);
+        Assertions.assertTrue(success, "Join failed");
+    }
 }
