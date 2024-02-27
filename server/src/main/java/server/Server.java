@@ -1,10 +1,8 @@
 package server;
 
 import com.google.gson.Gson;
-import model.AuthData;
-import model.UserData;
-import service.GameService;
-import service.UserService;
+import model.*;
+import service.*;
 import spark.*;
 
 public class Server {
@@ -30,15 +28,25 @@ public class Server {
     }
 
     private Object register(Request req, Response res){
-        UserData user = new Gson().fromJson(req.body(), UserData.class);
-        AuthData auth = userService.register(user.username(), user.password(), user.email());
-        if(auth == null){
-            res.status(403);
-            return new Gson().toJson(new FailureResponse("already taken"));
-        }
-        else{
+        try {
+            UserData user = new Gson().fromJson(req.body(), UserData.class);
+            if(user.username() == null || user.password() == null || user.email() == null){
+                res.status(400);
+                return new Gson().toJson(new FailureResponse("bad request"));
+            }
+
+            AuthData auth = userService.register(user.username(), user.password(), user.email());
+            if(auth == null){
+                res.status(403);
+                return new Gson().toJson(new FailureResponse("already taken"));
+            }
+
             res.status(200);
             return new Gson().toJson(auth);
+
+        } catch (Exception e){
+            res.status(500);
+            return new Gson().toJson(new FailureResponse("Error: " + e));
         }
     }
 
