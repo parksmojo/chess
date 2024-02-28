@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.Objects;
 
 public class MemoryGameDAO implements GameDAO {
-    private static ArrayList<GameData> games = new ArrayList<>();
+    private static final ArrayList<GameData> games = new ArrayList<>();
 
     @Override
     public void clear(){
@@ -29,21 +29,6 @@ public class MemoryGameDAO implements GameDAO {
 
         games.add(newGame);
         return gameID;
-    }
-
-    //temporary function for testing
-    public void setGame(GameData game){
-        games.add(game);
-    }
-
-    @Override
-    public GameData getGame(int gameID) {
-        for (GameData game : games) {
-            if (Objects.equals(game.gameID(), gameID)) {
-                return game;
-            }
-        }
-        return null;
     }
 
     @Override

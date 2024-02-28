@@ -23,13 +23,6 @@ public class GameService {
         return gameDAO.createGame(gameName);
     }
 
-    public GameData findGame(String auth, int gameID){
-        if(authDAO.validateAuth(auth) == null){
-            return null;
-        }
-        return gameDAO.getGame(gameID);
-    }
-
     public ArrayList<GameData> getGames(String authToken){
         if(authDAO.validateAuth(authToken) == null){
             return null;

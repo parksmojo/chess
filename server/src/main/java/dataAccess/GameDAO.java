@@ -9,5 +9,4 @@ public interface GameDAO {
     int createGame(String gameName);
     ArrayList<GameData> getGames();
     GameData insertUser(int gameID, ChessGame.TeamColor clientColor, String username);
-    GameData getGame(int gameID);
 }

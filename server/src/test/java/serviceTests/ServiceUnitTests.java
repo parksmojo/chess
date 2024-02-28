@@ -34,7 +34,7 @@ public class ServiceUnitTests {
         registeredAuth = userService.register(username,password,email);
 
         //already existing games
-        gameDAO.setGame(premadeGame);
+        gameDAO.createGame("First Game");
     }
 
     @Test
