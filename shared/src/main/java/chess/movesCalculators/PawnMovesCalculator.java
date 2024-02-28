@@ -8,7 +8,7 @@ import java.util.HashSet;
 public class PawnMovesCalculator extends PieceMoveCalculator {
     @Override
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
-        HashSet<ChessMove> moves = new HashSet<ChessMove>();
+        HashSet<ChessMove> moves = new HashSet<>();
         int myRow = myPosition.getRow();
         int myCol = myPosition.getColumn();
         boolean promote = false;
@@ -21,7 +21,6 @@ public class PawnMovesCalculator extends PieceMoveCalculator {
                 promotetype = new ChessPiece.PieceType[]{ChessPiece.PieceType.QUEEN, ChessPiece.PieceType.BISHOP, ChessPiece.PieceType.ROOK, ChessPiece.PieceType.KNIGHT};
             }
             else if (myRow == 2) firstMove = true;
-
             ChessPosition step = new ChessPosition(myRow + 1, myCol);
             ChessPosition jump = new ChessPosition(myRow + 2, myCol);
             if(isValidMove(board,myPosition,step) && board.getPiece(step) == null){
@@ -38,7 +37,6 @@ public class PawnMovesCalculator extends PieceMoveCalculator {
                     moves.add(new ChessMove(myPosition,jump, null));
                 }
             }
-
             ChessPosition[] diagonal = {new ChessPosition(myRow + 1, myCol - 1),new ChessPosition(myRow + 1, myCol + 1)};
             if(isValidMove(board,myPosition,diagonal[0]) && board.getPiece(diagonal[0]) != null){
                 if(promote){
@@ -62,13 +60,11 @@ public class PawnMovesCalculator extends PieceMoveCalculator {
             }
         }
         else{
-
             if(myRow == 2) {
                 promote = true;
                 promotetype = new ChessPiece.PieceType[]{ChessPiece.PieceType.QUEEN, ChessPiece.PieceType.BISHOP, ChessPiece.PieceType.ROOK, ChessPiece.PieceType.KNIGHT};
             }
             else if (myRow == 7) firstMove = true;
-
             ChessPosition step = new ChessPosition(myRow - 1, myCol);
             ChessPosition jump = new ChessPosition(myRow - 2, myCol);
             if(isValidMove(board,myPosition,step) && board.getPiece(step) == null){
@@ -85,7 +81,6 @@ public class PawnMovesCalculator extends PieceMoveCalculator {
                     moves.add(new ChessMove(myPosition,jump, null));
                 }
             }
-
             ChessPosition[] diagonal = {new ChessPosition(myRow - 1, myCol - 1),new ChessPosition(myRow - 1, myCol + 1)};
             if(isValidMove(board,myPosition,diagonal[0]) && board.getPiece(diagonal[0]) != null){
                 if(promote){

@@ -11,7 +11,7 @@ import java.util.HashSet;
  */
 public class ChessGame {
     private ChessBoard board = new ChessBoard();
-    private TeamColor TeamTurn = TeamColor.WHITE;
+    private TeamColor teamTurn = TeamColor.WHITE;
 
     public ChessGame() {
 
@@ -21,7 +21,7 @@ public class ChessGame {
      * @return Which team's turn it is
      */
     public TeamColor getTeamTurn() {
-        return TeamTurn;
+        return teamTurn;
     }
 
     /**
@@ -30,7 +30,7 @@ public class ChessGame {
      * @param team the team whose turn it is
      */
     public void setTeamTurn(TeamColor team) {
-        TeamTurn = team;
+        teamTurn = team;
     }
 
     /**
@@ -93,7 +93,7 @@ public class ChessGame {
         ChessPosition piecePos = move.getStartPosition();
         TeamColor team = board.getPiece(piecePos).getTeamColor();
 
-        if(team.equals(TeamTurn)){
+        if(team.equals(teamTurn)){
             for(ChessMove validMove : validMoves(piecePos)){
                 if(move.equals(validMove)){
                     if(move.getPromotionPiece() == null){
@@ -103,10 +103,10 @@ public class ChessGame {
                     }
                     board.addPiece(piecePos, null);
 
-                    if(TeamTurn.equals(TeamColor.WHITE)){
-                        TeamTurn = TeamColor.BLACK;
+                    if(teamTurn.equals(TeamColor.WHITE)){
+                        teamTurn = TeamColor.BLACK;
                     } else {
-                        TeamTurn = TeamColor.WHITE;
+                        teamTurn = TeamColor.WHITE;
                     }
 
                     return;
