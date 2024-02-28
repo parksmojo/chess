@@ -5,30 +5,27 @@ import chess.ChessMove;
 import chess.ChessPosition;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 
 public class KnightMovesCalculator extends PieceMoveCalculator {
     @Override
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
         HashSet<ChessMove> moves = new HashSet<>();
-        int myRow = myPosition.getRow();
-        int myCol = myPosition.getColumn();
+        int row = myPosition.getRow();
+        int col = myPosition.getColumn();
+        ChessPosition[] possible = new ChessPosition[8];
+        possible[0] = new ChessPosition(row+1,col-2);
+        possible[1] = new ChessPosition(row+1,col+2);
+        possible[2] = new ChessPosition(row-1,col-2);
+        possible[3] = new ChessPosition(row-1,col+2);
+        possible[4] = new ChessPosition(row+2,col-1);
+        possible[5] = new ChessPosition(row+2,col+1);
+        possible[6] = new ChessPosition(row-2,col-1);
+        possible[7] = new ChessPosition(row-2,col+1);
 
-        // List of all possible moves
-        HashMap<Integer,int[]> options = new HashMap<>();
-        options.put(-2, new int[]{-1, 1});
-        options.put(-1, new int[]{-2, 2});
-        options.put(1, new int[]{-2, 2});
-        options.put(2, new int[]{-1, 1});
-
-        // Loops through every recorded option
-        for(int x : options.keySet()){
-            for(int y : options.get(x)){
-                ChessPosition newPos = new ChessPosition(myRow + x, myCol + y);
-                if(isValidMove(board,myPosition,newPos)){
-                    moves.add(new ChessMove(myPosition,newPos,null));
-                }
+        for(int i = 0; i <= 7; i++){
+            if(isValidMove(board,myPosition,possible[i])){
+                moves.add(new ChessMove(myPosition,possible[i],null));
             }
         }
 
