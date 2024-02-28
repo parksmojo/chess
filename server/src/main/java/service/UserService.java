@@ -8,6 +8,10 @@ public class UserService {
     private final UserDAO userDAO = new MemoryUserDAO();
     private final AuthDAO authDAO = new MemoryAuthDAO();
 
+    public boolean validateAuth(String auth){
+        return authDAO.validateAuth(auth) != null;
+    }
+
     public AuthData register(String username, String password, String email){
         if(userDAO.getUser(username) != null){
             return null;

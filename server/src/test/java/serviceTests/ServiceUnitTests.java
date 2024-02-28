@@ -167,7 +167,6 @@ public class ServiceUnitTests {
     public void joinGameSuccess() throws TestException {
         int gameID = gameService.makeGame(registeredAuth.authToken(), newGame1);
         GameData newGame = gameService.joinGame(registeredAuth.authToken(), ChessGame.TeamColor.BLACK, gameID);
-        System.out.println(gameService.findGame(registeredAuth.authToken(), gameID));
         Assertions.assertNotNull(newGame, "Join failed");
     }
 
@@ -176,7 +175,6 @@ public class ServiceUnitTests {
     @DisplayName("Spot already taken")
     public void joinGameFailure() throws TestException {
         GameData newGame = gameService.joinGame(registeredAuth.authToken(), ChessGame.TeamColor.BLACK, premadeGame.gameID());
-        System.out.println(gameService.findGame(registeredAuth.authToken(), premadeGame.gameID()));
         Assertions.assertNull(newGame, "Joined taken spot");
     }
 }

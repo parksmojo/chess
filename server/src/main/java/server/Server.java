@@ -1,11 +1,13 @@
 package server;
 
+import chess.ChessGame;
 import com.google.gson.Gson;
 import model.*;
 import service.*;
 import spark.*;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 public class Server {
     private final GameService gameService = new GameService();
@@ -23,6 +25,7 @@ public class Server {
         Spark.delete("/session", this::logout);
         Spark.post("/game", this::create);
         Spark.get("/game", this::list);
+        Spark.put("/game", this::join);
 
         Spark.awaitInitialization();
         return Spark.port();
@@ -97,7 +100,6 @@ public class Server {
     private Object create(Request req, Response res){
         try {
             String authToken = req.headers("authorization");
-            System.out.println(authToken);
             if(authToken == null){
                 res.status(400);
                 return new Gson().toJson(new FailureResponse("bad request"));
@@ -111,7 +113,6 @@ public class Server {
 
             String gameName = game.gameName();
             int gameID = gameService.makeGame(authToken, gameName);
-            System.out.println(gameID);
 
             if(gameID == -1){
                 res.status(401);
@@ -132,21 +133,56 @@ public class Server {
     private Object list(Request req, Response res){
         try {
             String authToken = req.headers("authorization");
-            System.out.println("authToken:" + authToken);
             if(authToken == null) {
                 res.status(401);
                 return new Gson().toJson(new FailureResponse("unauthorized"));
             }
 
             ArrayList<GameData> games = gameService.getGames(authToken);
-            System.out.println(games);
             if(games != null){
                 res.status(200);
-                return new Gson().toJson(games);
+                return new Gson().toJson(Map.of("games",games));
             } else {
                 res.status(401);
                 return new Gson().toJson(new FailureResponse("unauthorized"));
             }
+        } catch (Exception e){
+            res.status(500);
+            return new Gson().toJson(new FailureResponse(e.toString()));
+        }
+    }
+
+    private Object join(Request req, Response res){
+        try {
+            String authToken = req.headers("authorization");
+            if(!userService.validateAuth(authToken)) {
+                res.status(401);
+                return new Gson().toJson(new FailureResponse("unauthorized"));
+            }
+
+            JoinRequest body = new Gson().fromJson(req.body(), JoinRequest.class);
+            if(body.gameID() <= 0){
+                res.status(400);
+                return new Gson().toJson(new FailureResponse("bad request"));
+            }
+
+            if(body.playerColor() != null){
+                ChessGame.TeamColor clientColor = null;
+                if(body.playerColor().equals("WHITE")){
+                    clientColor = ChessGame.TeamColor.WHITE;
+                } else if (body.playerColor().equals("BLACK")) {
+                    clientColor = ChessGame.TeamColor.BLACK;
+                }
+
+                GameData game = gameService.joinGame(authToken,clientColor,body.gameID());
+                if(game == null){
+                    res.status(403);
+                    return new Gson().toJson(new FailureResponse("already taken"));
+                }
+            }
+            res.status(200);
+            return "{}";
+
         } catch (Exception e){
             res.status(500);
             return new Gson().toJson(new FailureResponse(e.toString()));
