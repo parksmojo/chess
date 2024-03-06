@@ -4,9 +4,25 @@ import model.UserData;
 
 public class DatabaseUserDAO implements UserDAO{
     @Override
-    public UserData getUser(String username) {
-        // SELECT username, password FROM user_data WHERE username = username;
-        return null;
+    public UserData getUser(String username) throws DataAccessException {
+        try (var conn = DatabaseManager.getConnection()) {
+            var statement = "SELECT username, password FROM user_data WHERE username = ?;";
+            try (var preparedStatement = conn.prepareStatement(statement)) {
+                preparedStatement.setString(1, username);
+                try (var rs = preparedStatement.executeQuery()) {
+                    if (rs.next()) {
+                        var password = rs.getString("password");
+                        var email = rs.getString("email");
+
+                        return new UserData(username, password, email);
+                    } else {
+                        return null;
+                    }
+                }
+            }
+        } catch (Exception e) {
+            throw new DataAccessException(String.format("Unable to find user: %s", e.getMessage()));
+        }
     }
 
     @Override

@@ -13,38 +13,53 @@ public class UserService {
     }
 
     public AuthData register(String username, String password, String email){
-        if(userDAO.getUser(username) != null){
-            return null;
-        }
-
         try {
-            userDAO.createUser(username,password,email);
+            if (userDAO.getUser(username) != null) {
+                return null;
+            }
+
+            userDAO.createUser(username, password, email);
+
+            return authDAO.createAuth(username);
         } catch (Exception e){
+            System.out.println(e.getMessage());
             return null;
         }
-
-        return authDAO.createAuth(username);
     }
 
     public AuthData login(String username, String password){
-        UserData user = userDAO.getUser(username);
-        if(user == null){
-            return null;
-        }
+        try {
+            UserData user = userDAO.getUser(username);
+            if (user == null) {
+                return null;
+            }
 
-        if(Objects.equals(password, user.password())) {
-            return authDAO.createAuth(username);
-        } else {
+            if (Objects.equals(password, user.password())) {
+                return authDAO.createAuth(username);
+            } else {
+                return null;
+            }
+        } catch (Exception e){
+            System.out.println(e.getMessage());
             return null;
         }
     }
 
     public boolean logout(String authToken){
-        return authDAO.delAuth(authToken);
+        try {
+            return authDAO.delAuth(authToken);
+        } catch (Exception e){
+            System.out.println(e.getMessage());
+            return false;
+        }
     }
 
     public void clear(){
-        userDAO.clear();
-        authDAO.clear();
+        try {
+            userDAO.clear();
+            authDAO.clear();
+        } catch (Exception e){
+            System.out.println(e.getMessage());
+        }
     }
 }
