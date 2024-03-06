@@ -19,6 +19,7 @@ public class DataAccessTests {
     String loadedGameName = "First Game";
     UserData newUser = new UserData("jon3", "12345", "jon@gmail.com");
     String newGameName = "Second Game";
+    String[] newGames = {"Third Game","This Game","That Game","GamerCentral"};
 
     @BeforeEach
     public void setup() throws TestException {
@@ -301,7 +302,7 @@ public class DataAccessTests {
     }
 
     @Test
-    @Order(15)
+    @Order(16)
     @DisplayName("Game already exists")
     public void createGameFail() throws TestException {
         int result;
@@ -320,5 +321,46 @@ public class DataAccessTests {
 
         Assertions.assertEquals(-2, result, String.format("Should have returned error code -2. Given: %d", result));
         Assertions.assertEquals(loadedGameName, insertedGame.gameName(), "Game name does not match expected");
+    }
+
+    @Test
+    @Order(17)
+    @DisplayName("Return all games")
+    public void listGamesSuccess() throws TestException {
+        ArrayList<GameData> result;
+        GameData foundGame1;
+        GameData foundGame2;
+
+        try {
+            gameDAO.createGame(newGameName);
+            for(String gameName : newGames){
+                gameDAO.createGame(gameName);
+            }
+            result = gameDAO.getGames();
+            foundGame1 = gameDAO.findGame(newGames[0]);
+            foundGame2 = gameDAO.findGame(newGames[3]);
+        } catch (Exception e) {
+            throw new TestException(e.getMessage());
+        }
+
+        Assertions.assertFalse(result.isEmpty(), "Returned empty list");
+        Assertions.assertEquals(newGames[0],foundGame1.gameName(), String.format("Inserted game \"%s\" not found",newGames[0]));
+        Assertions.assertEquals(newGames[3],foundGame2.gameName(), String.format("Inserted game \"%s\" not found",newGames[3]));
+    }
+
+    @Test
+    @Order(18)
+    @DisplayName("No games")
+    public void listGamesFail() throws TestException {
+        ArrayList<GameData> result;
+
+        try {
+            gameDAO.clear();
+            result = gameDAO.getGames();
+        } catch (Exception e) {
+            throw new TestException(e.getMessage());
+        }
+
+        Assertions.assertTrue(result.isEmpty(), String.format("Expected null list, received: %s", result));
     }
 }

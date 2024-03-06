@@ -31,7 +31,7 @@ public class DatabaseGameDAO implements GameDAO{
                         var gameID = rs.getInt("game_ID");
                         var white_username = rs.getString("white_username");
                         var black_username = rs.getString("black_username");
-                        var gameJSON = rs.getString("black_username");
+                        var gameJSON = rs.getString("game");
                         var game = new Gson().fromJson(gameJSON, ChessGame.class);
 
                         return new GameData(gameID,white_username,black_username,gameName,game);
@@ -72,9 +72,28 @@ public class DatabaseGameDAO implements GameDAO{
     }
 
     @Override
-    public ArrayList<GameData> getGames() {
-        // SELECT * FROM game_data;
-        return null;
+    public ArrayList<GameData> getGames() throws DataAccessException {
+        ArrayList<GameData> games = new ArrayList<>();
+        try (var conn = DatabaseManager.getConnection()) {
+            var statement = "SELECT * FROM game_data;";
+            try (var preparedStatement = conn.prepareStatement(statement)) {
+                try (var rs = preparedStatement.executeQuery()) {
+                    while (rs.next()) {
+                        var gameID = rs.getInt("game_ID");
+                        var white_username = rs.getString("white_username");
+                        var black_username = rs.getString("black_username");
+                        var gameName = rs.getString("game_name");
+                        var gameJSON = rs.getString("game");
+                        var game = new Gson().fromJson(gameJSON, ChessGame.class);
+
+                        games.add(new GameData(gameID,white_username,black_username,gameName,game));
+                    }
+                    return games;
+                }
+            }
+        } catch (Exception e) {
+            throw new DataAccessException(String.format("Unable to find games: %s", e.getMessage()));
+        }
     }
 
     @Override
