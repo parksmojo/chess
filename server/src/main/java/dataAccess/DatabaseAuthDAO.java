@@ -2,12 +2,25 @@ package dataAccess;
 
 import model.AuthData;
 
+import java.util.UUID;
+
 public class DatabaseAuthDAO implements AuthDAO{
     @Override
-    public AuthData createAuth(String username) {
-        // INSERT INTO auth_data (authToken, username) VALUES (authToken, username);
-        // SELECT authToken, username FROM auth_data;
-        return null;
+    public AuthData createAuth(String username) throws DataAccessException {
+        try (var conn = DatabaseManager.getConnection()) {
+            var statement = "INSERT INTO auth_data (authToken, username) VALUES (?, ?);";
+            try (var preparedStatement = conn.prepareStatement(statement)) {
+                String token = UUID.randomUUID().toString();
+                preparedStatement.setString(1, token);
+                preparedStatement.setString(2, username);
+
+                preparedStatement.executeUpdate();
+
+                return new AuthData(token, username);
+            }
+        } catch (Exception e) {
+            throw new DataAccessException(String.format("Unable to create auth token: %s", e.getMessage()));
+        }
     }
 
     @Override

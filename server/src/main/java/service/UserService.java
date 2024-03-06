@@ -6,7 +6,7 @@ import java.util.Objects;
 
 public class UserService {
     private final UserDAO userDAO = new DatabaseUserDAO();
-    private final AuthDAO authDAO = new MemoryAuthDAO();
+    private final AuthDAO authDAO = new DatabaseAuthDAO();
 
     public boolean validateAuth(String auth){
         return authDAO.validateAuth(auth) != null;

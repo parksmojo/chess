@@ -59,7 +59,7 @@ public class DataAccessTests {
 
     @Test
     @Order(2)
-    @DisplayName("IDK HOW TO MAKE THIS FAIL")
+    @DisplayName("Duplicate User")
     public void newUserFail() throws TestException {
         String username = newUser.username();
         String password = newUser.password();
@@ -143,4 +143,25 @@ public class DataAccessTests {
             throw new TestException(e.getMessage());
         }
     }
+
+    @Test
+    @Order(7)
+    @DisplayName("Normal new auth token")
+    public void newAuthSuccess() throws TestException {
+        String username = newUser.username();
+        AuthData result;
+
+        try {
+            result = authDAO.createAuth(username);
+        } catch (Exception e) {
+            throw new TestException(e.getMessage());
+        }
+
+        Assertions.assertNotNull(result.authToken(), "Returned null auth token");
+        Assertions.assertEquals(username, result.username(), "Returned different username");
+    }
 }
+
+// TODO: new auth negative test
+
+
