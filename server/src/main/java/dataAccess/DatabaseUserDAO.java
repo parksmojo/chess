@@ -6,7 +6,7 @@ public class DatabaseUserDAO implements UserDAO{
     @Override
     public UserData getUser(String username) throws DataAccessException {
         try (var conn = DatabaseManager.getConnection()) {
-            var statement = "SELECT username, password FROM user_data WHERE username = ?;";
+            var statement = "SELECT username, password, email FROM user_data WHERE username = ?;";
             try (var preparedStatement = conn.prepareStatement(statement)) {
                 preparedStatement.setString(1, username);
                 try (var rs = preparedStatement.executeQuery()) {
