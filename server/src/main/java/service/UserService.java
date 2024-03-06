@@ -5,7 +5,7 @@ import model.*;
 import java.util.Objects;
 
 public class UserService {
-    private final UserDAO userDAO = new MemoryUserDAO();
+    private final UserDAO userDAO = new DatabaseUserDAO();
     private final AuthDAO authDAO = new MemoryAuthDAO();
 
     public boolean validateAuth(String auth){
@@ -17,7 +17,11 @@ public class UserService {
             return null;
         }
 
-        userDAO.createUser(username,password,email);
+        try {
+            userDAO.createUser(username,password,email);
+        } catch (Exception e){
+            return null;
+        }
 
         return authDAO.createAuth(username);
     }
