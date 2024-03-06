@@ -267,10 +267,23 @@ public class DataAccessTests {
         Assertions.assertEquals(loadedGameName, result.gameName(), "Game name does not match expected");
     }
 
-    // TODO: find game fail
+    @Test
+    @Order(14)
+    @DisplayName("Game doesn't exist")
+    public void findGameFail() throws TestException {
+        GameData result;
+
+        try {
+            result = gameDAO.findGame(newGameName);
+        } catch (Exception e) {
+            throw new TestException(e.getMessage());
+        }
+
+        Assertions.assertNull(result, "Returned non-existent game");
+    }
 
     @Test
-    @Order(13)
+    @Order(15)
     @DisplayName("Make a new game")
     public void createGameSuccess() throws TestException {
         int result;
@@ -287,5 +300,25 @@ public class DataAccessTests {
         Assertions.assertEquals(newGameName, insertedGame.gameName(), "Game name does not match expected");
     }
 
-    // TODO: Negative create game test case
+    @Test
+    @Order(15)
+    @DisplayName("Game already exists")
+    public void createGameFail() throws TestException {
+        int result;
+        GameData insertedGame;
+
+        try {
+            if(gameDAO.findGame(loadedGameName) == null) {
+                result = gameDAO.createGame(loadedGameName);
+            } else {
+                result = -2;
+            }
+            insertedGame = gameDAO.findGame(loadedGameName);
+        } catch (Exception e) {
+            throw new TestException(e.getMessage());
+        }
+
+        Assertions.assertEquals(-2, result, String.format("Should have returned error code -2. Given: %d", result));
+        Assertions.assertEquals(loadedGameName, insertedGame.gameName(), "Game name does not match expected");
+    }
 }
