@@ -15,12 +15,6 @@ public class MemoryGameDAO implements GameDAO {
 
     @Override
     public int createGame(String gameName) {
-        for(GameData game : games){
-            if(Objects.equals(game.gameName(), gameName)){
-                return -2;
-            }
-        }
-
         int gameID = games.size() + 1;
         String whiteUsername = null;
         String blackUsername = null;
@@ -29,6 +23,16 @@ public class MemoryGameDAO implements GameDAO {
 
         games.add(newGame);
         return gameID;
+    }
+
+    @Override
+    public GameData findGame(String gameName) {
+        for(GameData game : games){
+            if(Objects.equals(game.gameName(), gameName)){
+                return game;
+            }
+        }
+        return null;
     }
 
     @Override

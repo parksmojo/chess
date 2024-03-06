@@ -9,7 +9,7 @@ import java.util.ArrayList;
 
 public class GameService {
     private final GameDAO gameDAO = new MemoryGameDAO();
-    private final AuthDAO authDAO = new DatabaseAuthDAO();
+    private final AuthDAO authDAO = new MemoryAuthDAO();
 
     public void clear(){
         try {
@@ -23,6 +23,9 @@ public class GameService {
         try {
             if (authDAO.validateAuth(authToken) == null) {
                 return -1;
+            }
+            if (gameDAO.findGame(gameName) != null){
+                return -2;
             }
 
             return gameDAO.createGame(gameName);

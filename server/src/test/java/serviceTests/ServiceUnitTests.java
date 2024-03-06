@@ -114,7 +114,7 @@ public class ServiceUnitTests {
     public void createGameSuccess() throws TestException {
         int gameID = gameService.makeGame(registeredAuth.authToken(), newGame1);
 
-        Assertions.assertTrue(gameID >= 0, "Invalid gameID given");
+        Assertions.assertTrue(gameID >= 0, String.format("Invalid gameID given: %d",gameID));
     }
 
     @Test
