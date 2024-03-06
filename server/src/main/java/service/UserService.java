@@ -9,7 +9,12 @@ public class UserService {
     private final AuthDAO authDAO = new DatabaseAuthDAO();
 
     public boolean validateAuth(String auth){
-        return authDAO.validateAuth(auth) != null;
+        try {
+            return authDAO.validateAuth(auth) != null;
+        } catch (DataAccessException e) {
+            System.out.println(e.getMessage());
+            return false;
+        }
     }
 
     public AuthData register(String username, String password, String email){

@@ -24,9 +24,25 @@ public class DatabaseAuthDAO implements AuthDAO{
     }
 
     @Override
-    public AuthData validateAuth(String auth) {
-        // SELECT authToken, username FROM auth_data WHERE authToken = auth;
-        return null;
+    public AuthData validateAuth(String auth) throws DataAccessException {
+        try (var conn = DatabaseManager.getConnection()) {
+            var statement = "SELECT authToken, username FROM auth_data WHERE authToken = ?;";
+            try (var preparedStatement = conn.prepareStatement(statement)) {
+                preparedStatement.setString(1, auth);
+                try (var rs = preparedStatement.executeQuery()) {
+                    if (rs.next()) {
+                        var authToken = rs.getString("authToken");
+                        var username = rs.getString("username");
+
+                        return new AuthData(authToken, username);
+                    } else {
+                        return null;
+                    }
+                }
+            }
+        } catch (Exception e) {
+            throw new DataAccessException(String.format("Unable to find user: %s", e.getMessage()));
+        }
     }
 
     @Override

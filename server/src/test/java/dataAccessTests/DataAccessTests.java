@@ -160,8 +160,43 @@ public class DataAccessTests {
         Assertions.assertNotNull(result.authToken(), "Returned null auth token");
         Assertions.assertEquals(username, result.username(), "Returned different username");
     }
-}
+
 
 // TODO: new auth negative test
 
 
+    @Test
+    @Order(9)
+    @DisplayName("Valid auth token")
+    public void checkAuthSuccess() throws TestException {
+        String username = newUser.username();
+        AuthData result1;
+        AuthData result2;
+
+        try {
+            result1 = authDAO.createAuth(username);
+            result2 = authDAO.validateAuth(result1.authToken());
+        } catch (Exception e) {
+            throw new TestException(e.getMessage());
+        }
+
+        Assertions.assertNotNull(result2.authToken(), "Returned null auth token");
+        Assertions.assertEquals(username, result2.username(), "Returned different username");
+        Assertions.assertEquals(result1, result2, "Auth tokens not equal");
+    }
+
+    @Test
+    @Order(10)
+    @DisplayName("Invalid auth token")
+    public void checkAuthFail() throws TestException {
+        AuthData result;
+
+        try {
+            result = authDAO.validateAuth("bkh3w7whh5sef5rr8");
+        } catch (Exception e) {
+            throw new TestException(e.getMessage());
+        }
+
+        Assertions.assertNull(result, "Returned null auth token");
+    }
+}

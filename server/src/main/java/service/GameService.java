@@ -16,27 +16,42 @@ public class GameService {
     }
 
     public int makeGame(String authToken, String gameName){
-        if(authDAO.validateAuth(authToken) == null){
+        try {
+            if (authDAO.validateAuth(authToken) == null) {
+                return -1;
+            }
+
+            return gameDAO.createGame(gameName);
+        } catch (DataAccessException e) {
+            System.out.println(e.getMessage());
             return -1;
         }
-
-        return gameDAO.createGame(gameName);
     }
 
     public ArrayList<GameData> getGames(String authToken){
-        if(authDAO.validateAuth(authToken) == null){
+        try {
+            if (authDAO.validateAuth(authToken) == null) {
+                return null;
+            }
+
+            return gameDAO.getGames();
+        } catch (DataAccessException e) {
+            System.out.println(e.getMessage());
             return null;
         }
-
-        return gameDAO.getGames();
     }
 
     public GameData joinGame(String auth, ChessGame.TeamColor clientColor, int gameID){
-        AuthData authToken = authDAO.validateAuth(auth);
-        if(authToken == null){
+        try {
+            AuthData authToken = authDAO.validateAuth(auth);
+            if (authToken == null) {
+                return null;
+            }
+
+            return gameDAO.insertUser(gameID, clientColor, authToken.username());
+        } catch (DataAccessException e) {
+            System.out.println(e.getMessage());
             return null;
         }
-
-        return gameDAO.insertUser(gameID,clientColor,authToken.username());
     }
 }
