@@ -16,7 +16,9 @@ public class DataAccessTests {
 
     UserData registeredUser = new UserData("ryguy", "pass", "ry@gmail.com");
     AuthData registeredAuth;
+    String loadedGameName = "First Game";
     UserData newUser = new UserData("jon3", "12345", "jon@gmail.com");
+    String newGameName = "Second Game";
 
     @BeforeEach
     public void setup() throws TestException {
@@ -24,19 +26,20 @@ public class DataAccessTests {
         String password = registeredUser.password();
         String email = registeredUser.email();
 
-        // Start with empty tables
         try {
+            // Start with empty tables
             userDAO.clear();
             authDAO.clear();
+            gameDAO.clear();
+
+            // One user already logged in
+            registeredAuth = userService.register(username,password,email);
+
+            // Already existing games
+            gameDAO.createGame(loadedGameName);
         } catch (DataAccessException e) {
             throw new RuntimeException(e);
         }
-
-        // One user already logged in
-        registeredAuth = userService.register(username,password,email);
-
-        // Already existing games
-        gameDAO.createGame("First Game");
     }
 
     @Test
@@ -233,7 +236,7 @@ public class DataAccessTests {
     }
 
     @Test
-    @Order(5)
+    @Order(13)
     @DisplayName("Normal clear games")
     public void clearGameSuccess() throws TestException {
         ArrayList<GameData> result;
@@ -247,4 +250,42 @@ public class DataAccessTests {
 
         Assertions.assertNull(result, String.format("Games not cleared: %s", result));
     }
+
+    @Test
+    @Order(13)
+    @DisplayName("Find a game")
+    public void findGameSuccess() throws TestException {
+        GameData result;
+
+        try {
+            result = gameDAO.findGame(loadedGameName);
+        } catch (Exception e) {
+            throw new TestException(e.getMessage());
+        }
+
+        Assertions.assertNotNull(result, "Returned null");
+        Assertions.assertEquals(loadedGameName, result.gameName(), "Game name does not match expected");
+    }
+
+    // TODO: find game fail
+
+    @Test
+    @Order(13)
+    @DisplayName("Make a new game")
+    public void createGameSuccess() throws TestException {
+        int result;
+        GameData insertedGame;
+
+        try {
+            result = gameDAO.createGame(newGameName);
+            insertedGame = gameDAO.findGame(newGameName);
+        } catch (Exception e) {
+            throw new TestException(e.getMessage());
+        }
+
+        Assertions.assertTrue(result > 0, String.format("Returned error code: %d", result));
+        Assertions.assertEquals(newGameName, insertedGame.gameName(), "Game name does not match expected");
+    }
+
+    // TODO: Negative create game test case
 }

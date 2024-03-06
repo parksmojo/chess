@@ -6,8 +6,8 @@ import java.util.ArrayList;
 
 public interface GameDAO {
     void clear() throws DataAccessException;
-    int createGame(String gameName);
+    int createGame(String gameName) throws DataAccessException;
     ArrayList<GameData> getGames();
     GameData insertUser(int gameID, ChessGame.TeamColor clientColor, String username);
-    GameData findGame(String gameName);
+    GameData findGame(String gameName) throws DataAccessException;
 }

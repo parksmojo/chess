@@ -8,8 +8,8 @@ import model.GameData;
 import java.util.ArrayList;
 
 public class GameService {
-    private final GameDAO gameDAO = new MemoryGameDAO();
-    private final AuthDAO authDAO = new MemoryAuthDAO();
+    private final GameDAO gameDAO = new DatabaseGameDAO();
+    private final AuthDAO authDAO = new DatabaseAuthDAO();
 
     public void clear(){
         try {
