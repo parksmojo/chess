@@ -6,6 +6,8 @@ import org.junit.jupiter.api.*;
 import passoffTests.testClasses.TestException;
 import service.UserService;
 
+import java.util.ArrayList;
+
 public class DataAccessTests {
     private final GameDAO gameDAO = new DatabaseGameDAO();
     private final UserDAO userDAO = new DatabaseUserDAO();
@@ -228,5 +230,21 @@ public class DataAccessTests {
         }
 
         Assertions.assertFalse(result, "Deleted non-existent auth token");
+    }
+
+    @Test
+    @Order(5)
+    @DisplayName("Normal clear games")
+    public void clearGameSuccess() throws TestException {
+        ArrayList<GameData> result;
+
+        try {
+            gameDAO.clear();
+            result = gameDAO.getGames();
+        } catch (Exception e) {
+            throw new TestException(e.getMessage());
+        }
+
+        Assertions.assertNull(result, String.format("Games not cleared: %s", result));
     }
 }

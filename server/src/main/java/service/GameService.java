@@ -12,7 +12,11 @@ public class GameService {
     private final AuthDAO authDAO = new DatabaseAuthDAO();
 
     public void clear(){
-        gameDAO.clear();
+        try {
+            gameDAO.clear();
+        } catch (DataAccessException e) {
+            System.out.println(e.getMessage());
+        }
     }
 
     public int makeGame(String authToken, String gameName){

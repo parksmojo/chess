@@ -7,8 +7,15 @@ import java.util.ArrayList;
 
 public class DatabaseGameDAO implements GameDAO{
     @Override
-    public void clear() {
-        // TRUNCATE TABLE data_data;
+    public void clear() throws DataAccessException {
+        try (var conn = DatabaseManager.getConnection()) {
+            var statement = "TRUNCATE TABLE game_data;";
+            try (var preparedStatement = conn.prepareStatement(statement)) {
+                preparedStatement.executeUpdate();
+            }
+        } catch (Exception e) {
+            throw new DataAccessException(String.format("Unable to clear table: %s", e.getMessage()));
+        }
     }
 
     @Override
