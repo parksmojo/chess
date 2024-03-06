@@ -17,7 +17,8 @@ public class ServiceUnitTests {
     UserData registeredUser = new UserData("ryguy", "pass", "ry@gmail.com");
     AuthData registeredAuth;
     UserData newUser = new UserData("jon3", "12345", "jon@gmail.com");
-    GameData premadeGame = new GameData(1234,"ryguy","jon3","First Game", new ChessGame());
+    String premadeGameName = "First Game";
+    int premadeGameID;
     String newGame1 = "Second Game";
     String newGame2 = "Third Game";
 
@@ -34,7 +35,8 @@ public class ServiceUnitTests {
         registeredAuth = userService.register(username,password,email);
 
         //already existing games
-        gameDAO.createGame("First Game");
+        premadeGameID = gameDAO.createGame(premadeGameName);
+        gameDAO.insertUser(premadeGameID, ChessGame.TeamColor.BLACK,username);
     }
 
     @Test
@@ -174,7 +176,7 @@ public class ServiceUnitTests {
     @Order(13)
     @DisplayName("Spot already taken")
     public void joinGameFailure() throws TestException {
-        GameData newGame = gameService.joinGame(registeredAuth.authToken(), ChessGame.TeamColor.BLACK, premadeGame.gameID());
+        GameData newGame = gameService.joinGame(registeredAuth.authToken(), ChessGame.TeamColor.BLACK, premadeGameID);
         Assertions.assertNull(newGame, "Joined taken spot");
     }
 }

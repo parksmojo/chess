@@ -6,6 +6,7 @@ import model.AuthData;
 import model.GameData;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class GameService {
     private final GameDAO gameDAO = new DatabaseGameDAO();
@@ -55,7 +56,17 @@ public class GameService {
                 return null;
             }
 
-            return gameDAO.insertUser(gameID, clientColor, authToken.username());
+            GameData gameSpecified = gameDAO.findGame(gameID);
+            boolean canInsertWhite = clientColor == ChessGame.TeamColor.WHITE && Objects.equals(gameSpecified.whiteUsername(), null);
+            boolean canInsertBlack = clientColor == ChessGame.TeamColor.BLACK && Objects.equals(gameSpecified.blackUsername(), null);
+            if(canInsertWhite || canInsertBlack){
+                return gameDAO.insertUser(gameID, clientColor, authToken.username());
+            } else if(clientColor == null){
+                return gameSpecified;
+            } else {
+                return null;
+            }
+
         } catch (DataAccessException e) {
             System.out.println(e.getMessage());
             return null;

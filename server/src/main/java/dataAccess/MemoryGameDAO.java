@@ -69,14 +69,10 @@ public class MemoryGameDAO implements GameDAO {
         String gameName = gameSpecified.gameName();
         ChessGame game = gameSpecified.game();
 
-        if(clientColor == ChessGame.TeamColor.WHITE && Objects.equals(whiteUsername, null)){
+        if(clientColor == ChessGame.TeamColor.WHITE){
             whiteUsername = username;
-        } else if (clientColor == ChessGame.TeamColor.BLACK && Objects.equals(blackUsername, null)) {
+        } else if (clientColor == ChessGame.TeamColor.BLACK) {
             blackUsername = username;
-        } else if(clientColor == null){
-            return gameSpecified;
-        } else {
-            return null;
         }
 
         GameData newGame = new GameData(gameID,whiteUsername,blackUsername,gameName,game);
