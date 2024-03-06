@@ -75,6 +75,7 @@ public class DataAccessTests {
             throw new TestException(e.getMessage());
         }
 
+        assert result != null;
         Assertions.assertNotEquals(result.password(), "password", "Password changed when inserting duplicate username");
     }
 
@@ -117,6 +118,17 @@ public class DataAccessTests {
     public void clearUsersSuccess() throws TestException {
         try {
             userDAO.clear();
+        } catch (Exception e) {
+            throw new TestException(e.getMessage());
+        }
+    }
+
+    @Test
+    @Order(6)
+    @DisplayName("Normal clear auth tokens")
+    public void clearAuthsSuccess() throws TestException {
+        try {
+            authDAO.clear();
         } catch (Exception e) {
             throw new TestException(e.getMessage());
         }
