@@ -9,7 +9,7 @@ import java.util.ArrayList;
 
 public class GameService {
     private final GameDAO gameDAO = new MemoryGameDAO();
-    private final AuthDAO authDAO = new MemoryAuthDAO();
+    private final AuthDAO authDAO = new DatabaseAuthDAO();
 
     public void clear(){
         gameDAO.clear();
