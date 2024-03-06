@@ -1,34 +1,40 @@
 package dataAccessTests;
 
-import chess.ChessGame;
 import dataAccess.*;
 import model.*;
 import org.junit.jupiter.api.*;
 import passoffTests.testClasses.TestException;
+import service.UserService;
 
 public class DataAccessTests {
     private final GameDAO gameDAO = new DatabaseGameDAO();
     private final UserDAO userDAO = new DatabaseUserDAO();
     private final AuthDAO authDAO = new DatabaseAuthDAO();
+    UserService userService = new UserService();
 
     UserData registeredUser = new UserData("ryguy", "pass", "ry@gmail.com");
     AuthData registeredAuth;
     UserData newUser = new UserData("jon3", "12345", "jon@gmail.com");
-    GameData premadeGame = new GameData(1234,"ryguy","jon3","First Game", new ChessGame());
 
-//    @BeforeEach
-//    public void setup() throws TestException {
-//
-//        String username = registeredUser.username();
-//        String password = registeredUser.password();
-//        String email = registeredUser.email();
-//
-//        //one user already logged in
-//        registeredAuth = userService.register(username,password,email);
-//
-//        //already existing games
-//        gameDAO.createGame("First Game");
-//    }
+    @BeforeEach
+    public void setup() throws TestException {
+        String username = registeredUser.username();
+        String password = registeredUser.password();
+        String email = registeredUser.email();
+
+        // Start with empty tables
+        try {
+            userDAO.clear();
+        } catch (DataAccessException e) {
+            throw new RuntimeException(e);
+        }
+
+        // One user already logged in
+        registeredAuth = userService.register(username,password,email);
+
+        // Already existing games
+        gameDAO.createGame("First Game");
+    }
 
     @Test
     @Order(1)
@@ -37,12 +43,17 @@ public class DataAccessTests {
         String username = newUser.username();
         String password = newUser.password();
         String email = newUser.email();
+        UserData result;
 
         try {
             userDAO.createUser(username, password, email);
+            result = userDAO.getUser(username);
         } catch (Exception e) {
             throw new TestException(e.getMessage());
         }
+
+        Assertions.assertEquals(password, result.password(), "Password did not match expected");
+        Assertions.assertEquals(email, result.email(), "Email did not match expected");
     }
 
     @Test
@@ -52,12 +63,19 @@ public class DataAccessTests {
         String username = newUser.username();
         String password = newUser.password();
         String email = newUser.email();
+        UserData result;
 
         try {
             userDAO.createUser(username, password, email);
+            result = userDAO.getUser(username);
+            if(result != null) {
+                userDAO.createUser(username, "password", "email");
+            }
         } catch (Exception e) {
             throw new TestException(e.getMessage());
         }
+
+        Assertions.assertNotEquals(result.password(), "password", "Password changed when inserting duplicate username");
     }
 
     @Test
@@ -84,14 +102,23 @@ public class DataAccessTests {
     @DisplayName("User doesn't exist")
     public void getUserFail() throws TestException {
         UserData result;
-
         try {
-//            result = userDAO.getUser(newUser.username());
-            result = userDAO.getUser("gamer");
+            result = userDAO.getUser(newUser.username());
         } catch (Exception e) {
             throw new TestException(e.getMessage());
         }
 
         Assertions.assertNull(result, String.format("Expected null, received: %s", result));
+    }
+
+    @Test
+    @Order(5)
+    @DisplayName("Normal clear users")
+    public void clearUsersSuccess() throws TestException {
+        try {
+            userDAO.clear();
+        } catch (Exception e) {
+            throw new TestException(e.getMessage());
+        }
     }
 }

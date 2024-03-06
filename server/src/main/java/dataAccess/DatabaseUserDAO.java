@@ -42,7 +42,14 @@ public class DatabaseUserDAO implements UserDAO{
     }
 
     @Override
-    public void clear() {
-        // TRUNCATE TABLE user_data;
+    public void clear() throws DataAccessException {
+        try (var conn = DatabaseManager.getConnection()) {
+            var statement = "TRUNCATE TABLE user_data;";
+            try (var preparedStatement = conn.prepareStatement(statement)) {
+                preparedStatement.executeUpdate();
+            }
+        } catch (Exception e) {
+            throw new DataAccessException(String.format("Unable to clear table: %s", e.getMessage()));
+        }
     }
 }
