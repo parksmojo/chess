@@ -34,6 +34,15 @@ public class MemoryGameDAO implements GameDAO {
         }
         return null;
     }
+    @Override
+    public GameData findGame(int gameID) {
+        for(GameData game : games){
+            if(Objects.equals(game.gameID(), gameID)){
+                return game;
+            }
+        }
+        return null;
+    }
 
     @Override
     public ArrayList<GameData> getGames(){
