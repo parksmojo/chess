@@ -6,7 +6,7 @@ import java.util.HashSet;
 import java.util.UUID;
 
 public class MemoryAuthDAO implements AuthDAO{
-    private static HashSet<AuthData> authTokens = new HashSet<>();
+    private static final HashSet<AuthData> authTokens = new HashSet<>();
 
     @Override
     public AuthData createAuth(String username) {
@@ -32,7 +32,7 @@ public class MemoryAuthDAO implements AuthDAO{
     @Override
     public boolean delAuth(String auth){
         AuthData authToken = validateAuth(auth);
-        if(validateAuth(auth) != null){
+        if(authToken != null){
             authTokens.remove(authToken);
             return true;
         }

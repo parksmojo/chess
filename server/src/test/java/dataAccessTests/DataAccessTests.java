@@ -130,7 +130,7 @@ public class DataAccessTests {
             throw new TestException(e.getMessage());
         }
 
-        Assertions.assertNotNull(result, "User not deleted");
+        Assertions.assertNull(result, "User not deleted");
     }
 
     @Test
@@ -198,5 +198,35 @@ public class DataAccessTests {
         }
 
         Assertions.assertNull(result, "Returned null auth token");
+    }
+
+    @Test
+    @Order(11)
+    @DisplayName("Delete auth")
+    public void deleteAuthSuccess() throws TestException {
+        boolean result;
+
+        try {
+            result = authDAO.delAuth(registeredAuth.authToken());
+        } catch (Exception e) {
+            throw new TestException(e.getMessage());
+        }
+
+        Assertions.assertTrue(result, "Auth token not deleted");
+    }
+
+    @Test
+    @Order(12)
+    @DisplayName("Non-existent auth")
+    public void deleteAuthFail() throws TestException {
+        boolean result;
+
+        try {
+            result = authDAO.delAuth("h384hsd78w3lk");
+        } catch (Exception e) {
+            throw new TestException(e.getMessage());
+        }
+
+        Assertions.assertFalse(result, "Deleted non-existent auth token");
     }
 }
