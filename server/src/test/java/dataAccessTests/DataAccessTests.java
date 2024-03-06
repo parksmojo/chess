@@ -25,6 +25,7 @@ public class DataAccessTests {
         // Start with empty tables
         try {
             userDAO.clear();
+            authDAO.clear();
         } catch (DataAccessException e) {
             throw new RuntimeException(e);
         }
@@ -116,11 +117,20 @@ public class DataAccessTests {
     @Order(5)
     @DisplayName("Normal clear users")
     public void clearUsersSuccess() throws TestException {
+        String username = registeredUser.username();
+        String password = registeredUser.password();
+        String email = registeredUser.email();
+        UserData result;
+
         try {
+            userDAO.createUser(username, password, email);
             userDAO.clear();
+            result = userDAO.getUser(username);
         } catch (Exception e) {
             throw new TestException(e.getMessage());
         }
+
+        Assertions.assertNotNull(result, "User not deleted");
     }
 
     @Test
