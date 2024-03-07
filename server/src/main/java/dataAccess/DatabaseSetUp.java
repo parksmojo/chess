@@ -9,7 +9,7 @@ public class DatabaseSetUp {
                         CREATE TABLE `user_data` (
                            `iduser_data` int NOT NULL AUTO_INCREMENT,
                            `username` varchar(45) DEFAULT NULL,
-                           `password` varchar(45) DEFAULT NULL,
+                           `password` varchar(145) DEFAULT NULL,
                            `email` varchar(45) DEFAULT NULL,
                            PRIMARY KEY (`iduser_data`)
                          ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;

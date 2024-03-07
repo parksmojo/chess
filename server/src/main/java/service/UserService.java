@@ -2,11 +2,12 @@ package service;
 
 import dataAccess.*;
 import model.*;
-import java.util.Objects;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 public class UserService {
     private final UserDAO userDAO = new DatabaseUserDAO();
     private final AuthDAO authDAO = new DatabaseAuthDAO();
+    BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
     public boolean validateAuth(String auth){
         try {
@@ -23,7 +24,8 @@ public class UserService {
                 return null;
             }
 
-            userDAO.createUser(username, password, email);
+            String hashedPassword = encoder.encode(password);
+            userDAO.createUser(username, hashedPassword, email);
 
             return authDAO.createAuth(username);
         } catch (Exception e){
@@ -39,7 +41,8 @@ public class UserService {
                 return null;
             }
 
-            if (Objects.equals(password, user.password())) {
+
+            if (encoder.matches(password, user.password())) {
                 return authDAO.createAuth(username);
             } else {
                 return null;

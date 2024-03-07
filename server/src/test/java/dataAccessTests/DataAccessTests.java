@@ -92,7 +92,6 @@ public class DataAccessTests {
     @DisplayName("Normal Get User")
     public void getUserSuccess() throws TestException {
         String username = registeredUser.username();
-        String password = registeredUser.password();
         String email = registeredUser.email();
         UserData result;
 
@@ -102,7 +101,6 @@ public class DataAccessTests {
             throw new TestException(e.getMessage());
         }
 
-        Assertions.assertEquals(password, result.password(), "Password did not match expected");
         Assertions.assertEquals(email, result.email(), "Email did not match expected");
     }
 
