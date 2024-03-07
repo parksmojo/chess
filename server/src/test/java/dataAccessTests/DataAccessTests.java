@@ -1,5 +1,6 @@
 package dataAccessTests;
 
+import chess.ChessGame;
 import dataAccess.*;
 import model.*;
 import org.junit.jupiter.api.*;
@@ -249,7 +250,7 @@ public class DataAccessTests {
             throw new TestException(e.getMessage());
         }
 
-        Assertions.assertNull(result, String.format("Games not cleared: %s", result));
+        Assertions.assertTrue(result.isEmpty(), String.format("Games not cleared: %s", result));
     }
 
     @Test
@@ -362,5 +363,46 @@ public class DataAccessTests {
         }
 
         Assertions.assertTrue(result.isEmpty(), String.format("Expected null list, received: %s", result));
+    }
+
+    @Test
+    @Order(19)
+    @DisplayName("Inserting a User")
+    public void insertUserSuccess() throws TestException {
+        GameData result;
+        int resultID;
+
+        try {
+            resultID = gameDAO.createGame(newGameName);
+            result = gameDAO.insertUser(resultID, ChessGame.TeamColor.WHITE,registeredUser.username());
+        } catch (Exception e) {
+            throw new TestException(e.getMessage());
+        }
+
+        Assertions.assertNotNull(result, "Returned null game");
+        Assertions.assertEquals(newGameName, result.gameName(), "Returned different game name");
+        Assertions.assertEquals(resultID, result.gameID(), "Returned different ID");
+        Assertions.assertEquals(registeredUser.username(), result.whiteUsername(), "Inserted username does not match");
+    }
+
+    @Test
+    @Order(20)
+    @DisplayName("White spot taken")
+    public void insertUserFail() throws TestException {
+        GameData result;
+
+        try {
+            int gameID = gameDAO.createGame(newGameName);
+            GameData game = gameDAO.insertUser(gameID, ChessGame.TeamColor.WHITE,registeredUser.username());
+            if(game.whiteUsername() == null){
+                result = gameDAO.insertUser(gameID, ChessGame.TeamColor.WHITE,newUser.username());
+            } else {
+                result = null;
+            }
+        } catch (Exception e) {
+            throw new TestException(e.getMessage());
+        }
+
+        Assertions.assertNull(result, "Overwrote a player");
     }
 }

@@ -46,6 +46,31 @@ public class DatabaseGameDAO implements GameDAO{
     }
 
     @Override
+    public GameData findGame(int gameID) throws DataAccessException {
+        try (var conn = DatabaseManager.getConnection()) {
+            var statement = "SELECT * FROM game_data WHERE game_ID = ?;";
+            try (var preparedStatement = conn.prepareStatement(statement)) {
+                preparedStatement.setInt(1, gameID);
+                try (var rs = preparedStatement.executeQuery()) {
+                    if (rs.next()) {
+                        var gameName = rs.getString("game_name");
+                        var white_username = rs.getString("white_username");
+                        var black_username = rs.getString("black_username");
+                        var gameJSON = rs.getString("game");
+                        var game = new Gson().fromJson(gameJSON, ChessGame.class);
+
+                        return new GameData(gameID,white_username,black_username,gameName,game);
+                    } else {
+                        return null;
+                    }
+                }
+            }
+        } catch (Exception e) {
+            throw new DataAccessException(String.format("Unable to find game: %s", e.getMessage()));
+        }
+    }
+
+    @Override
     public int createGame(String gameName) throws DataAccessException {
         try (var conn = DatabaseManager.getConnection()) {
             var statement = "INSERT INTO game_data (game_name, game) VALUES (?, ?);";
@@ -97,10 +122,23 @@ public class DatabaseGameDAO implements GameDAO{
     }
 
     @Override
-    public GameData insertUser(int gameID, ChessGame.TeamColor clientColor, String username) {
-        // INSERT INTO game_data (white_username) VALUES (username) WHERE gameID = gameID;
-        // OR
-        // INSERT INTO game_data (black_username) VALUES (username) WHERE gameID = gameID;
-        return null;
+    public GameData insertUser(int gameID, ChessGame.TeamColor clientColor, String username) throws DataAccessException {
+        try (var conn = DatabaseManager.getConnection()) {
+            String statement = "";
+            if(clientColor == ChessGame.TeamColor.WHITE){
+                statement = "UPDATE game_data SET white_username = ? WHERE game_ID = ?;";
+            } else if (clientColor == ChessGame.TeamColor.BLACK) {
+                statement = "UPDATE game_data SET black_username = ? WHERE game_ID = ?;";
+            }
+            try (var preparedStatement = conn.prepareStatement(statement)) {
+                preparedStatement.setString(1, username);
+                preparedStatement.setInt(2, gameID);
+
+                preparedStatement.executeUpdate();
+            }
+        } catch (Exception e) {
+            throw new DataAccessException(String.format("Unable to insert user: %s", e.getMessage()));
+        }
+        return findGame(gameID);
     }
 }
