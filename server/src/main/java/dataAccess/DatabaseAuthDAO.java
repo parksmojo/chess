@@ -7,6 +7,9 @@ import java.util.UUID;
 public class DatabaseAuthDAO implements AuthDAO{
     @Override
     public AuthData createAuth(String username) throws DataAccessException {
+        if(username.isEmpty()){
+            return null;
+        }
         try (var conn = DatabaseManager.getConnection()) {
             var statement = "INSERT INTO auth_data (authToken, username) VALUES (?, ?);";
             try (var preparedStatement = conn.prepareStatement(statement)) {

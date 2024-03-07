@@ -169,7 +169,21 @@ public class DataAccessTests {
     }
 
 
-// TODO: new auth negative test
+    @Test
+    @Order(7)
+    @DisplayName("Normal new auth token")
+    public void newAuthFail() throws TestException {
+        String username = "";
+        AuthData result;
+
+        try {
+            result = authDAO.createAuth(username);
+        } catch (Exception e) {
+            throw new TestException(e.getMessage());
+        }
+
+        Assertions.assertNull(result, "Registered blank user");
+    }
 
 
     @Test
