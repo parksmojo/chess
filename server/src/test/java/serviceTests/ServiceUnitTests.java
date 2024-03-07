@@ -1,7 +1,6 @@
 package serviceTests;
 
 import chess.ChessGame;
-import dataAccess.MemoryGameDAO;
 import org.junit.jupiter.api.*;
 import passoffTests.testClasses.TestException;
 import model.*;
@@ -13,7 +12,6 @@ import java.util.ArrayList;
 public class ServiceUnitTests {
     UserService userService = new UserService();
     GameService gameService = new GameService();
-    private final MemoryGameDAO gameDAO = new MemoryGameDAO();
     UserData registeredUser = new UserData("ryguy", "pass", "ry@gmail.com");
     AuthData registeredAuth;
     UserData newUser = new UserData("jon3", "12345", "jon@gmail.com");
@@ -35,8 +33,8 @@ public class ServiceUnitTests {
         registeredAuth = userService.register(username,password,email);
 
         //already existing games
-        premadeGameID = gameDAO.createGame(premadeGameName);
-        gameDAO.insertUser(premadeGameID, ChessGame.TeamColor.BLACK,username);
+        premadeGameID = gameService.makeGame(registeredAuth.authToken(),premadeGameName);
+        gameService.joinGame(registeredAuth.authToken(), ChessGame.TeamColor.BLACK,premadeGameID);
     }
 
     @Test
