@@ -2,6 +2,7 @@ package server;
 
 import chess.ChessGame;
 import com.google.gson.Gson;
+import dataAccess.DatabaseSetUp;
 import model.*;
 import service.*;
 import spark.*;
@@ -12,6 +13,10 @@ import java.util.Map;
 public class Server {
     private final GameService gameService = new GameService();
     private final UserService userService = new UserService();
+
+    public Server(){
+        new DatabaseSetUp();
+    }
 
     public int run(int desiredPort) {
         Spark.port(desiredPort);
