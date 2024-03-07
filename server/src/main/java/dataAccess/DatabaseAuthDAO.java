@@ -47,22 +47,21 @@ public class DatabaseAuthDAO implements AuthDAO{
 
     @Override
     public boolean delAuth(String auth) throws DataAccessException {
-        if(validateAuth(auth) != null) {
-            try (var conn = DatabaseManager.getConnection()) {
-                var statement = "DELETE FROM auth_data WHERE authToken = ?;";
-                try (var preparedStatement = conn.prepareStatement(statement)) {
-                    String token = UUID.randomUUID().toString();
-                    preparedStatement.setString(1, token);
-
-                    preparedStatement.executeUpdate();
-
-                    return true;
-                }
-            } catch (Exception e) {
-                throw new DataAccessException(String.format("Unable to create auth token: %s", e.getMessage()));
-            }
+        if(validateAuth(auth) == null) {
+            return false;
         }
-        return false;
+        try (var conn = DatabaseManager.getConnection()) {
+            var statement = "DELETE FROM auth_data WHERE authToken = ?;";
+            try (var preparedStatement = conn.prepareStatement(statement)) {
+                preparedStatement.setString(1, auth);
+
+                preparedStatement.executeUpdate();
+
+                return true;
+            }
+        } catch (Exception e) {
+            throw new DataAccessException(String.format("Unable to delete auth token: %s", e.getMessage()));
+        }
     }
 
     @Override

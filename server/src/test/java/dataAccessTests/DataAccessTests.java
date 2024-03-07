@@ -211,15 +211,18 @@ public class DataAccessTests {
     @Order(11)
     @DisplayName("Delete auth")
     public void deleteAuthSuccess() throws TestException {
-        boolean result;
+        boolean success;
+        AuthData result;
 
         try {
-            result = authDAO.delAuth(registeredAuth.authToken());
+            success = authDAO.delAuth(registeredAuth.authToken());
+            result = authDAO.validateAuth(registeredAuth.authToken());
         } catch (Exception e) {
             throw new TestException(e.getMessage());
         }
 
-        Assertions.assertTrue(result, "Auth token not deleted");
+        Assertions.assertTrue(success, "Auth token not deleted");
+        Assertions.assertNull(result, "Auth not deleted");
     }
 
     @Test
