@@ -15,7 +15,6 @@ public class PreLoginUI {
             if(args.isEmpty() && args.getFirst() != null){
                 continue;
             }
-            System.out.printf("received: %s%n", args);
             String command = args.getFirst();
 
             switch (command) {
@@ -23,7 +22,13 @@ public class PreLoginUI {
                     running = false;
                     break;
                 case "help":
-                    System.out.println("helping");
+                    System.out.print("""
+                                register <username> <password> <email> - to create an account
+                                login <username> <password> - to play chess
+                                quit - to quit
+                                help - to see possible commands
+                                
+                            """);
                     break;
                 case "login":
                     System.out.println("logging in");
@@ -32,7 +37,7 @@ public class PreLoginUI {
                     System.out.println("registering");
                     break;
                 default:
-                    System.out.println("Command not recognized. Please try again");
+                    System.out.println("Command not recognized. Type help to see a list of commands");
                     break;
             }
         }
