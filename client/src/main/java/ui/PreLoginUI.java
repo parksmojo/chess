@@ -31,15 +31,33 @@ public class PreLoginUI {
                             """);
                     break;
                 case "login":
-                    System.out.println("logging in");
+                    System.out.print("login ");
+                    if(login()) {
+                        System.out.println("successful");
+                    } else {
+                        System.out.println("unsuccessful");
+                    }
                     break;
                 case "register":
-                    System.out.println("registering");
+                    System.out.print("register ");
+                    if(register()) {
+                        System.out.println("successful");
+                    } else {
+                        System.out.println("unsuccessful");
+                    }
                     break;
                 default:
                     System.out.println("Command not recognized. Type help to see a list of commands");
                     break;
             }
         }
+    }
+
+    private static boolean login(){
+        return ServerFacade.login() != null;
+    }
+
+    private static boolean register(){
+        return ServerFacade.register() != null;
     }
 }
