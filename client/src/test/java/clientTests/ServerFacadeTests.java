@@ -10,6 +10,8 @@ import server.Server;
 import ui.ServerFacade;
 import model.*;
 
+import java.util.ArrayList;
+
 
 public class ServerFacadeTests {
 
@@ -116,6 +118,53 @@ public class ServerFacadeTests {
         int errorCode = 0;
         try {
             facade.newGame("auth.authToken()","NewGame");
+        } catch (ResponseException e){
+            errorCode = e.StatusCode();
+        }
+        Assertions.assertEquals(401, errorCode);
+    }
+
+    @Test
+    public void listGameSuccess() throws Exception {
+        AuthData auth = facade.register("player1", "password", "p1@email.com");
+        facade.newGame(auth.authToken(), "Game1");
+        facade.newGame(auth.authToken(), "Game2");
+        facade.newGame(auth.authToken(), "Game3");
+        ArrayList<GameData> result = facade.listGames(auth.authToken());
+        Assertions.assertNotNull(result);
+        Assertions.assertEquals("Game1",result.getFirst().gameName());
+        System.out.println(result.getFirst().gameID());
+    } //TODO: fix
+    @Test
+    public void listGameFail() {
+        int errorCode = 0;
+        try {
+            facade.newGame("auth.authToken()","NewGame");
+        } catch (ResponseException e){
+            errorCode = e.StatusCode();
+        }
+        Assertions.assertEquals(401, errorCode);
+    }
+
+
+    @Test
+    public void joinSuccess() throws Exception {
+        AuthData auth = facade.register("player1", "password", "p1@email.com");
+        facade.logout(auth.authToken());
+        int errorCode = 0;
+        try {
+            facade.logout(auth.authToken());
+        } catch (ResponseException e){
+            errorCode = e.StatusCode();
+        }
+        Assertions.assertEquals(401, errorCode);
+    }
+    @Test
+    public void joinFail() throws Exception {
+        facade.register("player1", "password", "p1@email.com");
+        int errorCode = 0;
+        try {
+            facade.logout("auth.authToken()");
         } catch (ResponseException e){
             errorCode = e.StatusCode();
         }

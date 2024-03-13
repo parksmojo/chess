@@ -1,17 +1,21 @@
 package ui;
 
+import chess.ChessGame;
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import exception.ResponseException;
 import model.*;
-import server.GameIDResponse;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Map;
 
 public class ServerFacade {
@@ -38,7 +42,18 @@ public class ServerFacade {
     public int newGame(String authToken, String gameName) throws ResponseException {
         String path = "/game";
         Object body = Map.of("gameName",gameName);
+        record GameIDResponse(int gameID) { }
         return this.makeRequest("POST",path,authToken,body,GameIDResponse.class).gameID();
+    }
+    public ArrayList<GameData> listGames(String authToken) throws ResponseException {
+        String path = "/game";
+        Type listType = new TypeToken<ArrayList<GameData>>() {}.getType();
+        return this.makeRequest("GET",path,authToken,null, listType);
+    }
+    public void joinGame(String authToken, ChessGame.TeamColor ClientColor, int gameID) throws ResponseException {
+        String path = "/game";
+        Object body = Map.of("ClientColor",ClientColor,"gameID",gameID);
+        this.makeRequest("PUT",path,authToken,body,null);
     }
 
 
@@ -54,6 +69,25 @@ public class ServerFacade {
             http.connect();
             throwIfNotSuccessful(http);
             return readBody(http, responseClass);
+        } catch (ResponseException ex){
+            throw new ResponseException(ex.StatusCode(),ex.getMessage());
+        } catch (Exception ex) {
+            throw new ResponseException(500, ex.getMessage());
+        }
+    }
+    // Method overload to accept Type parameter
+    private <T> T makeRequest(String method, String path, String authToken, Object reqBody, Type responseType) throws ResponseException {
+        try {
+            URL url = (new URI(serverURL + path)).toURL();
+            HttpURLConnection http = (HttpURLConnection) url.openConnection();
+            http.setRequestMethod(method);
+            http.setDoOutput(true);
+
+            writeHeader(authToken,http);
+            writeBody(reqBody, http);
+            http.connect();
+            throwIfNotSuccessful(http);
+            return readBody(http, responseType);
         } catch (ResponseException ex){
             throw new ResponseException(ex.StatusCode(),ex.getMessage());
         } catch (Exception ex) {
@@ -81,6 +115,19 @@ public class ServerFacade {
                 InputStreamReader reader = new InputStreamReader(respBody);
                 if (responseClass != null) {
                     response = new Gson().fromJson(reader, responseClass);
+                }
+            }
+        }
+        return response;
+    }
+    // Method overload to accept Type parameter
+    private static <T> T readBody(HttpURLConnection http, Type responseType) throws IOException {
+        T response = null;
+        if (http.getContentLength() < 0) {
+            try (InputStream respBody = http.getInputStream()) {
+                InputStreamReader reader = new InputStreamReader(respBody);
+                if (responseType != null) {
+                    response = new Gson().fromJson(reader, responseType);
                 }
             }
         }
