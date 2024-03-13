@@ -3,6 +3,7 @@ package ui;
 import com.google.gson.Gson;
 import exception.ResponseException;
 import model.*;
+import server.GameIDResponse;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -11,6 +12,7 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
+import java.util.Map;
 
 public class ServerFacade {
     private static String serverURL = "http://localhost:";
@@ -32,6 +34,11 @@ public class ServerFacade {
     public void logout(String authToken) throws ResponseException {
         String path = "/session";
         this.makeRequest("DELETE",path,authToken,null,null);
+    }
+    public int newGame(String authToken, String gameName) throws ResponseException {
+        String path = "/game";
+        Object body = Map.of("gameName",gameName);
+        return this.makeRequest("POST",path,authToken,body,GameIDResponse.class).gameID();
     }
 
 

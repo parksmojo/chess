@@ -104,4 +104,21 @@ public class ServerFacadeTests {
         }
         Assertions.assertEquals(401, errorCode);
     }
+
+    @Test
+    public void createGameSuccess() throws Exception {
+        AuthData auth = facade.register("player1", "password", "p1@email.com");
+        int result = facade.newGame(auth.authToken(), "Game1");
+        Assertions.assertEquals(1,result);
+    }
+    @Test
+    public void createGameFail() {
+        int errorCode = 0;
+        try {
+            facade.newGame("auth.authToken()","NewGame");
+        } catch (ResponseException e){
+            errorCode = e.StatusCode();
+        }
+        Assertions.assertEquals(401, errorCode);
+    }
 }
