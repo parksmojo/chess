@@ -80,4 +80,28 @@ public class ServerFacadeTests {
         }
         Assertions.assertEquals(401, errorCode);
     }
+
+    @Test
+    public void logoutSuccess() throws Exception {
+        AuthData auth = facade.register("player1", "password", "p1@email.com");
+        facade.logout(auth.authToken());
+        int errorCode = 0;
+        try {
+            facade.logout(auth.authToken());
+        } catch (ResponseException e){
+            errorCode = e.StatusCode();
+        }
+        Assertions.assertEquals(401, errorCode);
+    }
+    @Test
+    public void logoutFail() throws Exception {
+        facade.register("player1", "password", "p1@email.com");
+        int errorCode = 0;
+        try {
+            facade.logout("auth.authToken()");
+        } catch (ResponseException e){
+            errorCode = e.StatusCode();
+        }
+        Assertions.assertEquals(401, errorCode);
+    }
 }

@@ -22,23 +22,28 @@ public class ServerFacade {
     public AuthData register(String username, String password, String email) throws ResponseException {
         String path = "/user";
         UserData user = new UserData(username,password,email);
-        return this.makeRequest("POST",path,user,AuthData.class);
+        return this.makeRequest("POST",path,null,user,AuthData.class);
     }
-    public  AuthData login(String username, String password) throws ResponseException {
+    public AuthData login(String username, String password) throws ResponseException {
         String path = "/session";
         UserData user = new UserData(username,password,null);
-        return this.makeRequest("POST",path,user,AuthData.class);
+        return this.makeRequest("POST",path,null,user,AuthData.class);
+    }
+    public void logout(String authToken) throws ResponseException {
+        String path = "/session";
+        this.makeRequest("DELETE",path,authToken,null,null);
     }
 
 
-    private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass) throws ResponseException {
+    private <T> T makeRequest(String method, String path, String authToken, Object reqBody, Class<T> responseClass) throws ResponseException {
         try {
             URL url = (new URI(serverURL + path)).toURL();
             HttpURLConnection http = (HttpURLConnection) url.openConnection();
             http.setRequestMethod(method);
             http.setDoOutput(true);
 
-            writeBody(request, http);
+            writeHeader(authToken,http);
+            writeBody(reqBody, http);
             http.connect();
             throwIfNotSuccessful(http);
             return readBody(http, responseClass);
@@ -46,6 +51,11 @@ public class ServerFacade {
             throw new ResponseException(ex.StatusCode(),ex.getMessage());
         } catch (Exception ex) {
             throw new ResponseException(500, ex.getMessage());
+        }
+    }
+    private static void writeHeader(String authToken, HttpURLConnection http) {
+        if (authToken != null) {
+            http.addRequestProperty("authorization", authToken);
         }
     }
     private static void writeBody(Object request, HttpURLConnection http) throws IOException {
@@ -76,7 +86,6 @@ public class ServerFacade {
             throw new ResponseException(status, "failure: " + status);
         }
     }
-
     private boolean isSuccessful(int status) {
         return status / 100 == 2;
     }
