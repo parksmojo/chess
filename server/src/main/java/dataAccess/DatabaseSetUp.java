@@ -6,7 +6,7 @@ public class DatabaseSetUp {
             DatabaseManager.createDatabase();
             try (var conn = DatabaseManager.getConnection()) {
                 var createUserTable = """
-                        CREATE TABLE `user_data` (
+                        CREATE TABLE IF NOT EXISTS `user_data` (
                            `iduser_data` int NOT NULL AUTO_INCREMENT,
                            `username` varchar(45) DEFAULT NULL,
                            `password` varchar(145) DEFAULT NULL,
@@ -18,7 +18,7 @@ public class DatabaseSetUp {
                     createTableStatement.executeUpdate();
                 }
                 var createAuthTable = """
-                        CREATE TABLE `auth_data` (
+                        CREATE TABLE IF NOT EXISTS `auth_data` (
                           `idauth_data` int NOT NULL AUTO_INCREMENT,
                           `authToken` varchar(45) DEFAULT NULL,
                           `username` varchar(45) DEFAULT NULL,
@@ -29,7 +29,7 @@ public class DatabaseSetUp {
                     createTableStatement.executeUpdate();
                 }
                 var createGameTable = """
-                        CREATE TABLE `game_data` (
+                        CREATE TABLE IF NOT EXISTS `game_data` (
                            `game_ID` int NOT NULL AUTO_INCREMENT,
                            `white_username` varchar(45) DEFAULT NULL,
                            `black_username` varchar(45) DEFAULT NULL,
@@ -44,7 +44,7 @@ public class DatabaseSetUp {
                 }
             }
         } catch (Exception e){
-            System.out.println("Could not set up database");
+            System.out.println("Could not set up database:" + e.getMessage());
         }
     }
 }
