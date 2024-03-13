@@ -19,13 +19,15 @@ public class ServerFacade {
         serverURL += Integer.toString(port);
     }
 
-    public AuthData register(String username, String password, String email) throws Exception {
+    public AuthData register(String username, String password, String email) throws ResponseException {
         String path = "/user";
         UserData user = new UserData(username,password,email);
         return this.makeRequest("POST",path,user,AuthData.class);
     }
-    public static Object login(){
-        return null;
+    public  AuthData login(String username, String password) throws ResponseException {
+        String path = "/session";
+        UserData user = new UserData(username,password,null);
+        return this.makeRequest("POST",path,user,AuthData.class);
     }
 
 
@@ -40,6 +42,8 @@ public class ServerFacade {
             http.connect();
             throwIfNotSuccessful(http);
             return readBody(http, responseClass);
+        } catch (ResponseException ex){
+            throw new ResponseException(ex.StatusCode(),ex.getMessage());
         } catch (Exception ex) {
             throw new ResponseException(500, ex.getMessage());
         }

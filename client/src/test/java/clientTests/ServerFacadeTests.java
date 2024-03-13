@@ -60,6 +60,24 @@ public class ServerFacadeTests {
         } catch (ResponseException e){
             errorCode = e.StatusCode();
         }
-        Assertions.assertEquals(500, errorCode);
+        Assertions.assertEquals(403, errorCode);
+    }
+
+    @Test
+    public void loginSuccess() throws Exception {
+        facade.register("player1", "password", "p1@email.com");
+        AuthData result = facade.login("player1", "password");
+        Assertions.assertTrue(result.authToken().length() > 10);
+    }
+    @Test
+    public void loginFail() throws Exception {
+        facade.register("player1", "password", "p1@email.com");
+        int errorCode = 0;
+        try {
+            facade.login("player1", "wrong");
+        } catch (ResponseException e){
+            errorCode = e.StatusCode();
+        }
+        Assertions.assertEquals(401, errorCode);
     }
 }
