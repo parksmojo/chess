@@ -54,10 +54,10 @@ public class PreLoginUI {
     }
 
     private static boolean login(){
-        return ServerFacade.login() != null;
+        return false;
     }
 
     private static boolean register(){
-        return ServerFacade.register() != null;
+        return false;
     }
 }
