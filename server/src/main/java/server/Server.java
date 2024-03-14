@@ -146,7 +146,8 @@ public class Server {
             ArrayList<GameData> games = gameService.getGames(authToken);
             if(games != null){
                 res.status(200);
-                return new Gson().toJson(Map.of("games",games));
+                var list = games.toArray();
+                return new Gson().toJson(Map.of("games",list));
             } else {
                 res.status(401);
                 return new Gson().toJson(new FailureResponse("unauthorized"));
