@@ -16,6 +16,7 @@ import java.util.Map;
 
 public class ServerFacade {
     private static String serverURL = "http://localhost:";
+    private String currentAuthToken = null;
 
     public ServerFacade(int port) {
         serverURL += Integer.toString(port);
@@ -24,16 +25,35 @@ public class ServerFacade {
     public AuthData register(String username, String password, String email) throws ResponseException {
         String path = "/user";
         UserData user = new UserData(username,password,email);
-        return this.makeRequest("POST",path,null,user,AuthData.class);
+        AuthData result = this.makeRequest("POST",path,null,user,AuthData.class);
+        currentAuthToken = result.authToken();
+        return result;
     }
+
     public AuthData login(String username, String password) throws ResponseException {
         String path = "/session";
         UserData user = new UserData(username,password,null);
-        return this.makeRequest("POST",path,null,user,AuthData.class);
+        AuthData result =  this.makeRequest("POST",path,null,user,AuthData.class);
+        currentAuthToken = result.authToken();
+        return result;
+    }
+
+    public void logout() throws ResponseException {
+        String path = "/session";
+        this.makeRequest("DELETE",path,currentAuthToken,null,null);
+        currentAuthToken = null;
     }
     public void logout(String authToken) throws ResponseException {
         String path = "/session";
         this.makeRequest("DELETE",path,authToken,null,null);
+        currentAuthToken = null;
+    }
+
+    public int newGame(String gameName) throws ResponseException {
+        String path = "/game";
+        Object body = Map.of("gameName",gameName);
+        record GameIDResponse(int gameID) { }
+        return this.makeRequest("POST",path,currentAuthToken,body,GameIDResponse.class).gameID();
     }
     public int newGame(String authToken, String gameName) throws ResponseException {
         String path = "/game";
@@ -41,11 +61,24 @@ public class ServerFacade {
         record GameIDResponse(int gameID) { }
         return this.makeRequest("POST",path,authToken,body,GameIDResponse.class).gameID();
     }
+
+    public GameData[] listGames() throws ResponseException {
+        String path = "/game";
+        record listGameData(GameData[] games){}
+        var response = this.makeRequest("GET",path,currentAuthToken,null, listGameData.class);
+        return response.games;
+    }
     public GameData[] listGames(String authToken) throws ResponseException {
         String path = "/game";
         record listGameData(GameData[] games){}
         var response = this.makeRequest("GET",path,authToken,null, listGameData.class);
         return response.games;
+    }
+
+    public void joinGame(ChessGame.TeamColor ClientColor, int gameID) throws ResponseException {
+        String path = "/game";
+        Object body = Map.of("playerColor",ClientColor,"gameID",gameID);
+        this.makeRequest("PUT",path,currentAuthToken,body,null);
     }
     public void joinGame(String authToken, ChessGame.TeamColor ClientColor, int gameID) throws ResponseException {
         String path = "/game";

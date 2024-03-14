@@ -44,11 +44,6 @@ public class ServerFacadeTests {
 
 
     @Test
-    public void sampleTest() {
-        Assertions.assertTrue(true);
-    }
-
-    @Test
     public void registerSuccess() throws Exception {
         AuthData result = facade.register("player1", "password", "p1@email.com");
         Assertions.assertTrue(result.authToken().length() > 10);
@@ -85,11 +80,11 @@ public class ServerFacadeTests {
 
     @Test
     public void logoutSuccess() throws Exception {
-        AuthData auth = facade.register("player1", "password", "p1@email.com");
-        facade.logout(auth.authToken());
+        facade.register("player1", "password", "p1@email.com");
+        facade.logout();
         int errorCode = 0;
         try {
-            facade.logout(auth.authToken());
+            facade.logout();
         } catch (ResponseException e){
             errorCode = e.StatusCode();
         }
@@ -109,8 +104,8 @@ public class ServerFacadeTests {
 
     @Test
     public void createGameSuccess() throws Exception {
-        AuthData auth = facade.register("player1", "password", "p1@email.com");
-        int result = facade.newGame(auth.authToken(), "Game1");
+        facade.register("player1", "password", "p1@email.com");
+        int result = facade.newGame("Game1");
         Assertions.assertEquals(1,result);
     }
     @Test
@@ -126,11 +121,11 @@ public class ServerFacadeTests {
 
     @Test
     public void listGameSuccess() throws Exception {
-        AuthData auth = facade.register("player1", "password", "p1@email.com");
-        facade.newGame(auth.authToken(), "Game1");
-        facade.newGame(auth.authToken(), "Game2");
-        facade.newGame(auth.authToken(), "Game3");
-        GameData[] result = facade.listGames(auth.authToken());
+        facade.register("player1", "password", "p1@email.com");
+        facade.newGame("Game1");
+        facade.newGame("Game2");
+        facade.newGame("Game3");
+        GameData[] result = facade.listGames();
         Assertions.assertNotNull(result);
         Assertions.assertEquals("Game1",result[0].gameName());
         System.out.println(result[0].gameName());
@@ -149,10 +144,10 @@ public class ServerFacadeTests {
 
     @Test
     public void joinSuccess() throws Exception {
-        AuthData auth = facade.register("player1", "password", "p1@email.com");
-        int gameID = facade.newGame(auth.authToken(), "New Game");
-        facade.joinGame(auth.authToken(), ChessGame.TeamColor.WHITE, gameID);
-        GameData[] game = facade.listGames(auth.authToken());
+        facade.register("player1", "password", "p1@email.com");
+        int gameID = facade.newGame("New Game");
+        facade.joinGame(ChessGame.TeamColor.WHITE, gameID);
+        GameData[] game = facade.listGames();
         System.out.println(Arrays.toString(game));
         Assertions.assertNotNull(game);
         Assertions.assertEquals(1, game.length);
