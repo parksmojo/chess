@@ -49,7 +49,7 @@ public class ServerFacade {
     }
     public void joinGame(String authToken, ChessGame.TeamColor ClientColor, int gameID) throws ResponseException {
         String path = "/game";
-        Object body = Map.of("ClientColor",ClientColor,"gameID",gameID);
+        Object body = Map.of("playerColor",ClientColor,"gameID",gameID);
         this.makeRequest("PUT",path,authToken,body,null);
     }
 

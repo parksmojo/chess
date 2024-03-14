@@ -1,5 +1,6 @@
 package clientTests;
 
+import chess.ChessGame;
 import dataAccess.DataAccessException;
 import dataAccess.DatabaseAuthDAO;
 import dataAccess.DatabaseGameDAO;
@@ -9,6 +10,8 @@ import org.junit.jupiter.api.*;
 import server.Server;
 import ui.ServerFacade;
 import model.*;
+
+import java.util.Arrays;
 
 public class ServerFacadeTests {
 
@@ -147,24 +150,27 @@ public class ServerFacadeTests {
     @Test
     public void joinSuccess() throws Exception {
         AuthData auth = facade.register("player1", "password", "p1@email.com");
-        facade.logout(auth.authToken());
-        int errorCode = 0;
-        try {
-            facade.logout(auth.authToken());
-        } catch (ResponseException e){
-            errorCode = e.StatusCode();
-        }
-        Assertions.assertEquals(401, errorCode);
+        int gameID = facade.newGame(auth.authToken(), "New Game");
+        facade.joinGame(auth.authToken(), ChessGame.TeamColor.WHITE, gameID);
+        GameData[] game = facade.listGames(auth.authToken());
+        System.out.println(Arrays.toString(game));
+        Assertions.assertNotNull(game);
+        Assertions.assertEquals(1, game.length);
+        Assertions.assertEquals("player1", game[0].whiteUsername());
     }
     @Test
     public void joinFail() throws Exception {
-        facade.register("player1", "password", "p1@email.com");
+        AuthData auth1 = facade.register("player1", "password", "p1@email.com");
+        AuthData auth2 = facade.register("player2", "pass2word", "p2@email.com");
+        int gameID = facade.newGame(auth1.authToken(), "New Game");
+        facade.joinGame(auth1.authToken(), ChessGame.TeamColor.WHITE, gameID);
+
         int errorCode = 0;
         try {
-            facade.logout("auth.authToken()");
+            facade.joinGame(auth2.authToken(), ChessGame.TeamColor.WHITE, gameID);
         } catch (ResponseException e){
             errorCode = e.StatusCode();
         }
-        Assertions.assertEquals(401, errorCode);
+        Assertions.assertEquals(403, errorCode);
     }
 }
