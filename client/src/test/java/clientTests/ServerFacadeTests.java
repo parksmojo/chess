@@ -10,9 +10,6 @@ import server.Server;
 import ui.ServerFacade;
 import model.*;
 
-import java.util.ArrayList;
-
-
 public class ServerFacadeTests {
 
     private static Server server;
@@ -130,11 +127,11 @@ public class ServerFacadeTests {
         facade.newGame(auth.authToken(), "Game1");
         facade.newGame(auth.authToken(), "Game2");
         facade.newGame(auth.authToken(), "Game3");
-        ArrayList<GameData> result = facade.listGames(auth.authToken());
+        GameData[] result = facade.listGames(auth.authToken());
         Assertions.assertNotNull(result);
-        Assertions.assertEquals("Game1",result.getFirst().gameName());
-        System.out.println(result.getFirst().gameID());
-    } //TODO: fix
+        Assertions.assertEquals("Game1",result[0].gameName());
+        System.out.println(result[0].gameName());
+    }
     @Test
     public void listGameFail() {
         int errorCode = 0;
