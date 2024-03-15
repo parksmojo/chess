@@ -6,15 +6,15 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Scanner;
 
-public class PreLoginUI {
+public class PreLoginUI extends UIHelper{
     private static ServerFacade server;
 
-    public PreLoginUI(ServerFacade server){
-        PreLoginUI.server = server;
+    public static void start(ServerFacade serverFacade){
+        server = serverFacade;
         run();
     }
 
-    public void run(){
+    private static void run(){
         Scanner scanner = new Scanner(System.in);
         boolean running = true;
         while(running){
@@ -66,6 +66,7 @@ public class PreLoginUI {
 
         try {
             server.register(username, password, email);
+            PostLoginUI.start(server, username);
         } catch (ResponseException e) {
             printError(e.StatusCode());
         }
@@ -84,38 +85,10 @@ public class PreLoginUI {
 
         try {
             server.login(username, password);
+            System.out.println("logged in as: " + username);
+            PostLoginUI.start(server, username);
         } catch (ResponseException e) {
             printError(e.StatusCode());
-        }
-    }
-
-    private static boolean hasGoodParams(int actual, int expected){
-        expected++;
-        if(actual == expected) {
-            return true;
-        } else if (actual < expected){
-            System.out.println("Not enough arguments entered");
-            return false;
-        } else {
-            System.out.println("Too many arguments entered");
-            return false;
-        }
-    }
-
-    private static void printError(int code){
-        switch (code){
-            case 400:
-                System.out.println("Error: bad request");
-                break;
-            case 401:
-                System.out.println("Error: unauthorized");
-                break;
-            case 403:
-                System.out.println("Username already taken");
-                break;
-            default:
-                System.out.println("Unknown error occurred");
-                break;
         }
     }
 }

@@ -11,7 +11,7 @@ public class Main {
 
         System.out.println("♕ 240 Chess Client: Type help to get started");
         try {
-            new PreLoginUI(facade);
+            PreLoginUI.start(facade);
         } finally {
             server.stop();
         }
