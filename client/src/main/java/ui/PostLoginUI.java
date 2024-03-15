@@ -41,6 +41,9 @@ public class PostLoginUI extends UIHelper{
                                 
                             """);
                     break;
+                case "create":
+                    create(args);
+                    break;
                 case "logout":
                     logout();
                     break;
@@ -48,6 +51,22 @@ public class PostLoginUI extends UIHelper{
                     System.out.println("Command not recognized. Type help to see a list of commands");
                     break;
             }
+        }
+    }
+
+    private static void create(ArrayList<String> args){
+        String gameName;
+        if(hasGoodParams(args.size(), 1)){
+            gameName = args.get(1);
+        } else {
+            return;
+        }
+
+        try{
+            server.newGame(gameName);
+            System.out.println(gameName + " created successfully");
+        } catch (ResponseException e) {
+            printError(e.StatusCode());
         }
     }
 
