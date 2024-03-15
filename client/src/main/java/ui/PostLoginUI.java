@@ -1,6 +1,7 @@
 package ui;
 
 import exception.ResponseException;
+import model.GameData;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -44,6 +45,9 @@ public class PostLoginUI extends UIHelper{
                 case "create":
                     create(args);
                     break;
+                case "list":
+                    list();
+                    break;
                 case "logout":
                     logout();
                     break;
@@ -51,6 +55,17 @@ public class PostLoginUI extends UIHelper{
                     System.out.println("Command not recognized. Type help to see a list of commands");
                     break;
             }
+        }
+    }
+
+    private static void list(){
+        try{
+            GameData[] games = server.listGames();
+            for(GameData game : games){
+                System.out.printf("\t[%d] %s - { '%s' | '%s' }%n",game.gameID(), game.gameName(), game.whiteUsername(), game.blackUsername());
+            }
+        } catch (ResponseException e) {
+            printError(e.StatusCode());
         }
     }
 
