@@ -1,11 +1,20 @@
 package ui;
 
+import exception.ResponseException;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Scanner;
 
 public class PreLoginUI {
-    public static void run(){
+    private static ServerFacade server;
+
+    public PreLoginUI(ServerFacade server){
+        PreLoginUI.server = server;
+        run();
+    }
+
+    public void run(){
         Scanner scanner = new Scanner(System.in);
         boolean running = true;
         while(running){
@@ -32,19 +41,9 @@ public class PreLoginUI {
                     break;
                 case "login":
                     System.out.print("login ");
-                    if(login()) {
-                        System.out.println("successful");
-                    } else {
-                        System.out.println("unsuccessful");
-                    }
                     break;
                 case "register":
-                    System.out.print("register ");
-                    if(register()) {
-                        System.out.println("successful");
-                    } else {
-                        System.out.println("unsuccessful");
-                    }
+                    register(args);
                     break;
                 default:
                     System.out.println("Command not recognized. Type help to see a list of commands");
@@ -53,11 +52,27 @@ public class PreLoginUI {
         }
     }
 
-    private static boolean login(){
-        return false;
+    private static void register(ArrayList<String> args) {
+        String username;
+        String password;
+        String email;
+        if(args.size() == 4) {
+            username = args.get(1);
+            password = args.get(2);
+            email = args.get(3);
+        } else if (args.size() < 4){
+            System.out.println("Not enough arguments entered");
+            return;
+        } else {
+            System.out.println("Too many arguments entered");
+            return;
+        }
+
+        try {
+            server.register(username, password, email);
+        } catch (ResponseException e) {
+            System.out.println(e.getMessage());
+        }
     }
 
-    private static boolean register(){
-        return false;
-    }
 }
