@@ -40,7 +40,7 @@ public class PreLoginUI {
                             """);
                     break;
                 case "login":
-                    System.out.print("login ");
+                    login(args);
                     break;
                 case "register":
                     register(args);
@@ -56,23 +56,66 @@ public class PreLoginUI {
         String username;
         String password;
         String email;
-        if(args.size() == 4) {
+        if(hasGoodParams(args.size(),3)) {
             username = args.get(1);
             password = args.get(2);
             email = args.get(3);
-        } else if (args.size() < 4){
-            System.out.println("Not enough arguments entered");
-            return;
         } else {
-            System.out.println("Too many arguments entered");
             return;
         }
 
         try {
             server.register(username, password, email);
         } catch (ResponseException e) {
-            System.out.println(e.getMessage());
+            printError(e.StatusCode());
         }
     }
 
+    private static void login(ArrayList<String> args){
+        String username;
+        String password;
+
+        if(hasGoodParams(args.size(), 2)){
+            username = args.get(1);
+            password = args.get(2);
+        } else {
+            return;
+        }
+
+        try {
+            server.login(username, password);
+        } catch (ResponseException e) {
+            printError(e.StatusCode());
+        }
+    }
+
+    private static boolean hasGoodParams(int actual, int expected){
+        expected++;
+        if(actual == expected) {
+            return true;
+        } else if (actual < expected){
+            System.out.println("Not enough arguments entered");
+            return false;
+        } else {
+            System.out.println("Too many arguments entered");
+            return false;
+        }
+    }
+
+    private static void printError(int code){
+        switch (code){
+            case 400:
+                System.out.println("Error: bad request");
+                break;
+            case 401:
+                System.out.println("Error: unauthorized");
+                break;
+            case 403:
+                System.out.println("Username already taken");
+                break;
+            default:
+                System.out.println("Unknown error occurred");
+                break;
+        }
+    }
 }
