@@ -37,7 +37,7 @@ public class PostLoginUI extends UIHelper{
                     System.out.print("""
                                 create <name> - to make a new game
                                 list - to see games
-                                join <id> [WHITE|BLACK|<empty>] - to play a game
+                                join <id> [WHITE|BLACK] - to play a game
                                 observe <id> - to watch a game
                                 logout - to logout
                                 help - to see possible commands
