@@ -56,6 +56,9 @@ public class PostLoginUI extends UIHelper{
                 case "join":
                     join(args);
                     break;
+                case "observe":
+                    observe(args);
+                    break;
                 default:
                     System.out.println("Command not recognized. Type help to see a list of commands");
                     break;
@@ -112,6 +115,22 @@ public class PostLoginUI extends UIHelper{
 
         try{
             server.joinGame(team, gameID);
+        } catch (ResponseException e) {
+            printError(e.StatusCode());
+        }
+    }
+
+    private static void observe(ArrayList<String> args){
+        int gameID;
+
+        if(hasGoodParams(args.size(), 1)){
+            gameID = Integer.parseInt(args.get(1));
+        } else {
+            return;
+        }
+
+        try{
+            server.joinGame(null, gameID);
         } catch (ResponseException e) {
             printError(e.StatusCode());
         }
