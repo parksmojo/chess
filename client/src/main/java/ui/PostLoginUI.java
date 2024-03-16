@@ -1,10 +1,12 @@
 package ui;
 
+import chess.ChessGame;
 import exception.ResponseException;
 import model.GameData;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.Scanner;
 
 public class PostLoginUI extends UIHelper{
@@ -51,6 +53,9 @@ public class PostLoginUI extends UIHelper{
                 case "logout":
                     logout();
                     break;
+                case "join":
+                    join(args);
+                    break;
                 default:
                     System.out.println("Command not recognized. Type help to see a list of commands");
                     break;
@@ -80,6 +85,33 @@ public class PostLoginUI extends UIHelper{
         try{
             server.newGame(gameName);
             System.out.println(gameName + " created successfully");
+        } catch (ResponseException e) {
+            printError(e.StatusCode());
+        }
+    }
+
+    private static void join(ArrayList<String> args){
+        int gameID;
+        String teamIN;
+        ChessGame.TeamColor team;
+
+        if(hasGoodParams(args.size(), 2)){
+            gameID = Integer.parseInt(args.get(1));
+            teamIN = args.get(2);
+            if(Objects.equals(teamIN, "WHITE") || Objects.equals(teamIN, "white") || Objects.equals(teamIN, "White")){
+                team = ChessGame.TeamColor.WHITE;
+            } else if(Objects.equals(teamIN, "BLACK") || Objects.equals(teamIN, "black") || Objects.equals(teamIN, "Black")){
+                team = ChessGame.TeamColor.BLACK;
+            } else {
+                System.out.println("Team pick not input correctly. Please try again");
+                return;
+            }
+        } else {
+            return;
+        }
+
+        try{
+            server.joinGame(team, gameID);
         } catch (ResponseException e) {
             printError(e.StatusCode());
         }
