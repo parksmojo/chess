@@ -7,10 +7,10 @@ abstract class UIHelper {
         if(actual == expected) {
             return true;
         } else if (actual < expected){
-            System.out.println("Not enough arguments entered");
+            System.out.println("Missing arguments");
             return false;
         } else {
-            System.out.println("Too many arguments entered");
+            System.out.println("Too many arguments");
             return false;
         }
     }
@@ -24,7 +24,7 @@ abstract class UIHelper {
                 System.out.println("Error: unauthorized");
                 break;
             case 403:
-                System.out.println("Username already taken");
+                System.out.println("Already taken");
                 break;
             default:
                 System.out.println("Unknown error occurred");

@@ -60,7 +60,7 @@ public class PostLoginUI extends UIHelper{
                     observe(args);
                     break;
                 default:
-                    System.out.println("\t" + "Command not recognized. Type help to see a list of commands");
+                    System.out.println("Command not recognized. Type help to see a list of commands");
                     break;
             }
         }
@@ -87,7 +87,7 @@ public class PostLoginUI extends UIHelper{
 
         try{
             int ID = server.newGame(gameName);
-            System.out.println("\t" + gameName + " created with ID: " + ID);
+            System.out.println("Game: " + gameName + " created with ID: " + ID);
         } catch (ResponseException e) {
             printError(e.StatusCode());
         }
@@ -106,7 +106,7 @@ public class PostLoginUI extends UIHelper{
             } else if(Objects.equals(teamIN, "BLACK") || Objects.equals(teamIN, "black") || Objects.equals(teamIN, "Black")){
                 team = ChessGame.TeamColor.BLACK;
             } else {
-                System.out.println("\t" + "Team pick not input correctly. Please try again");
+                System.out.println("Team color not input correctly. Please try again");
                 return;
             }
         } else {

@@ -46,7 +46,7 @@ public class PreLoginUI extends UIHelper{
                     register(args);
                     break;
                 default:
-                    System.out.println("\t" + "Command not recognized. Type help to see a list of commands");
+                    System.out.println("Command not recognized. Type help to see a list of commands");
                     break;
             }
         }
@@ -85,7 +85,7 @@ public class PreLoginUI extends UIHelper{
 
         try {
             server.login(username, password);
-            System.out.println("\t" + "logged in as: " + username);
+            System.out.println("logged in as: " + username);
             PostLoginUI.start(server, username);
         } catch (ResponseException e) {
             printError(e.StatusCode());
