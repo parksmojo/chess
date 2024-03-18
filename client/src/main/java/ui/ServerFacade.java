@@ -77,7 +77,12 @@ public class ServerFacade {
 
     public void joinGame(ChessGame.TeamColor ClientColor, int gameID) throws ResponseException {
         String path = "/game";
-        Object body = Map.of("playerColor",ClientColor,"gameID",gameID);
+        Object body;
+        if(ClientColor != null){
+            body = Map.of("playerColor",ClientColor,"gameID",gameID);
+        } else {
+            body = Map.of("gameID",gameID);
+        }
         this.makeRequest("PUT",path,currentAuthToken,body,null);
     }
     public void joinGame(String authToken, ChessGame.TeamColor ClientColor, int gameID) throws ResponseException {
