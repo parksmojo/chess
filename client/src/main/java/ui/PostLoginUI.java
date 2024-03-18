@@ -87,7 +87,7 @@ public class PostLoginUI extends UIHelper{
 
         try{
             server.newGame(gameName);
-            System.out.println(gameName + " created successfully");
+            System.out.println("\t" + gameName + " created successfully");
         } catch (ResponseException e) {
             printError(e.StatusCode());
         }
