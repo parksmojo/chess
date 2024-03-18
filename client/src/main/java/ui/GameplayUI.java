@@ -10,12 +10,10 @@ import java.util.Arrays;
 import java.util.Scanner;
 
 public class GameplayUI extends UIHelper{
-    private static ServerFacade server;
     private static String currUser;
     private static GameData game;
 
-    public static void start(ServerFacade serverFacade, String user, GameData gameModel){
-        server = serverFacade;
+    public static void start(String user, GameData gameModel){
         currUser = user;
         game = gameModel;
         displayBoard();
