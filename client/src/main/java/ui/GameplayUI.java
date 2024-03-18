@@ -56,7 +56,7 @@ public class GameplayUI extends UIHelper{
         ChessBoard board = game.game().getBoard();
         String space = EscapeSequences.QUARTER_SPACE;
 
-        printLetters(true);
+        printLetters(false);
         for(int i = 1; i <= 8; i++){
             System.out.print(space + i + space + "|");
             for(int j = 1; j <= 8; j++){
@@ -70,9 +70,9 @@ public class GameplayUI extends UIHelper{
             }
             System.out.print(space + i + "\n");
         }
-        printLetters(true);
-        System.out.print("\n");
         printLetters(false);
+        System.out.print("\n");
+        printLetters(true);
         for(int i = 8; i >= 1; i--){
             System.out.print(space + i + space + "|");
             for(int j = 8; j >= 1; j--){
@@ -86,7 +86,7 @@ public class GameplayUI extends UIHelper{
             }
             System.out.print(space + i + "\n");
         }
-        printLetters(false);
+        printLetters(true);
     }
     private static void printLetters(boolean forward){
         System.out.print(EscapeSequences.EMPTY + EscapeSequences.N_SPACE);
