@@ -1,7 +1,6 @@
 package chess;
 
 import chess.movesCalculators.*;
-import ui.EscapeSequences;
 
 import java.util.Collection;
 import java.util.Objects;
@@ -72,21 +71,21 @@ public class ChessPiece {
 
         if(color == ChessGame.TeamColor.WHITE){
             switch (type){
-                case KING -> pieceChar = EscapeSequences.WHITE_KING;
-                case QUEEN -> pieceChar = EscapeSequences.WHITE_QUEEN;
-                case BISHOP -> pieceChar = EscapeSequences.WHITE_BISHOP;
-                case KNIGHT -> pieceChar = EscapeSequences.WHITE_KNIGHT;
-                case ROOK -> pieceChar = EscapeSequences.WHITE_ROOK;
-                case PAWN -> pieceChar = EscapeSequences.WHITE_PAWN;
+                case KING -> pieceChar = "♚";
+                case QUEEN -> pieceChar = "♛";
+                case BISHOP -> pieceChar = "♝";
+                case KNIGHT -> pieceChar = "♞";
+                case ROOK -> pieceChar = "♜";
+                case PAWN -> pieceChar = "♟";
             }
         } else {
             switch (type){
-                case KING -> pieceChar = EscapeSequences.BLACK_KING;
-                case QUEEN -> pieceChar = EscapeSequences.BLACK_QUEEN;
-                case BISHOP -> pieceChar = EscapeSequences.BLACK_BISHOP;
-                case KNIGHT -> pieceChar = EscapeSequences.BLACK_KNIGHT;
-                case ROOK -> pieceChar = EscapeSequences.BLACK_ROOK;
-                case PAWN -> pieceChar = EscapeSequences.BLACK_PAWN;
+                case KING -> pieceChar = "♔";
+                case QUEEN -> pieceChar = "♕";
+                case BISHOP -> pieceChar = "♗";
+                case KNIGHT -> pieceChar = "♘";
+                case ROOK -> pieceChar = "♖";
+                case PAWN -> pieceChar = "♙";
             }
         }
 
