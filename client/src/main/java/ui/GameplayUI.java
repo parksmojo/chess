@@ -57,7 +57,7 @@ public class GameplayUI extends UIHelper{
         printLetters(false);
         for(int i = 1; i <= 8; i++){
             System.out.print(space + i + space + "|");
-            for(int j = 1; j <= 8; j++){
+            for(int j = 8; j >= 1; j--){
                 ChessPiece piece = board.getPiece(new ChessPosition(i,j));
                 if(piece == null){
                     System.out.print(EscapeSequences.EMPTY);
@@ -73,7 +73,7 @@ public class GameplayUI extends UIHelper{
         printLetters(true);
         for(int i = 8; i >= 1; i--){
             System.out.print(space + i + space + "|");
-            for(int j = 8; j >= 1; j--){
+            for(int j = 1; j <= 8; j++){
                 ChessPiece piece = board.getPiece(new ChessPosition(i,j));
                 if(piece == null){
                     System.out.print(EscapeSequences.EMPTY);
