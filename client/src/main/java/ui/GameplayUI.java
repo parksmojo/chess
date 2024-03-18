@@ -1,14 +1,23 @@
 package ui;
 
+import chess.ChessBoard;
+import chess.ChessPiece;
+import chess.ChessPosition;
+import model.GameData;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Scanner;
 
 public class GameplayUI extends UIHelper{
     private static ServerFacade server;
+    private static String currUser;
+    private static GameData game;
 
-    public static void start(ServerFacade serverFacade){
+    public static void start(ServerFacade serverFacade, String user, GameData gameModel){
         server = serverFacade;
+        currUser = user;
+        game = gameModel;
         run();
     }
 
@@ -16,7 +25,7 @@ public class GameplayUI extends UIHelper{
         Scanner scanner = new Scanner(System.in);
         boolean running = true;
         while (running) {
-            System.out.print("[LOGGED_OUT] >>> ");
+            System.out.print("[" + currUser + "] >>> ");
             String[] input = scanner.nextLine().split(" ");
             ArrayList<String> args = new ArrayList<>(Arrays.asList(input));
             if (args.isEmpty() && args.getFirst() != null) {
@@ -27,9 +36,7 @@ public class GameplayUI extends UIHelper{
             switch (command) {
                 case "help":
                     System.out.print("""
-                                register <username> <password> <email> - to create an account
-                                login <username> <password> - to play chess
-                                quit - to quit
+                                quit - to quit game
                                 help - to see possible commands
                                 
                             """);

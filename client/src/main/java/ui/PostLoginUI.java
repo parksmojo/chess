@@ -115,6 +115,7 @@ public class PostLoginUI extends UIHelper{
 
         try{
             server.joinGame(team, gameID);
+            GameplayUI.start(server,currUser,findGame(gameID));
         } catch (ResponseException e) {
             printError(e.StatusCode());
         }
@@ -131,9 +132,24 @@ public class PostLoginUI extends UIHelper{
 
         try{
             server.joinGame(null, gameID);
+            GameplayUI.start(server,currUser,findGame(gameID));
         } catch (ResponseException e) {
             printError(e.StatusCode());
         }
+    }
+
+    private static GameData findGame(int gameID){
+        try {
+            GameData[] games = server.listGames();
+            for(GameData game : games){
+                if(game.gameID() == gameID){
+                    return game;
+                }
+            }
+        } catch (ResponseException e) {
+            printError(e.StatusCode());
+        }
+        return null;
     }
 
     private static void logout(){
