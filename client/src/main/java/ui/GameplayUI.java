@@ -18,6 +18,7 @@ public class GameplayUI extends UIHelper{
         server = serverFacade;
         currUser = user;
         game = gameModel;
+        displayBoard();
         run();
     }
 
@@ -25,7 +26,7 @@ public class GameplayUI extends UIHelper{
         Scanner scanner = new Scanner(System.in);
         boolean running = true;
         while (running) {
-            System.out.print("[" + currUser + "] >>> ");
+            System.out.print("[" + currUser + "] PLAYING >>> ");
             String[] input = scanner.nextLine().split(" ");
             ArrayList<String> args = new ArrayList<>(Arrays.asList(input));
             if (args.isEmpty() && args.getFirst() != null) {
@@ -49,5 +50,56 @@ public class GameplayUI extends UIHelper{
                     break;
             }
         }
+    }
+
+    private static void displayBoard(){
+        ChessBoard board = game.game().getBoard();
+        String space = EscapeSequences.QUARTER_SPACE;
+
+        printLetters(true);
+        for(int i = 1; i <= 8; i++){
+            System.out.print(space + i + space + "|");
+            for(int j = 1; j <= 8; j++){
+                ChessPiece piece = board.getPiece(new ChessPosition(i,j));
+                if(piece == null){
+                    System.out.print(EscapeSequences.EMPTY);
+                } else {
+                    System.out.print(piece);
+                }
+                System.out.print("|");
+            }
+            System.out.print(space + i + "\n");
+        }
+        printLetters(true);
+        System.out.print("\n");
+        printLetters(false);
+        for(int i = 8; i >= 1; i--){
+            System.out.print(space + i + space + "|");
+            for(int j = 8; j >= 1; j--){
+                ChessPiece piece = board.getPiece(new ChessPosition(i,j));
+                if(piece == null){
+                    System.out.print(EscapeSequences.EMPTY);
+                } else {
+                    System.out.print(piece);
+                }
+                System.out.print("|");
+            }
+            System.out.print(space + i + "\n");
+        }
+        printLetters(false);
+    }
+    private static void printLetters(boolean forward){
+        System.out.print(EscapeSequences.EMPTY + EscapeSequences.N_SPACE);
+        String space = EscapeSequences.QUARTER_SPACE;
+        if(forward){
+            for(char c = 'a'; c <= 'h'; ++c){
+                System.out.print(space + c + space + EscapeSequences.N_SPACE);
+            }
+        } else{
+            for(char c = 'h'; c >= 'a'; --c){
+                System.out.print(space + c + space + EscapeSequences.N_SPACE);
+            }
+        }
+        System.out.print("\n");
     }
 }
