@@ -9,10 +9,10 @@ import java.util.Arrays;
  * signature of the existing methods.
  */
 public class ChessBoard {
-    private ChessPiece[][] squares = new ChessPiece[8][8];
+    private final ChessPiece[][] squares = new ChessPiece[8][8];
 
     public ChessBoard() {
-        
+        resetBoard();
     }
 
     /**

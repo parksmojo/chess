@@ -1,6 +1,7 @@
 package chess;
 
 import chess.movesCalculators.*;
+import ui.EscapeSequences;
 
 import java.util.Collection;
 import java.util.Objects;
@@ -67,7 +68,29 @@ public class ChessPiece {
 
     @Override
     public String toString() {
-        return String.format("%s-%s",color,type);
+        String pieceChar = null;
+
+        if(color == ChessGame.TeamColor.WHITE){
+            switch (type){
+                case KING -> pieceChar = EscapeSequences.WHITE_KING;
+                case QUEEN -> pieceChar = EscapeSequences.WHITE_QUEEN;
+                case BISHOP -> pieceChar = EscapeSequences.WHITE_BISHOP;
+                case KNIGHT -> pieceChar = EscapeSequences.WHITE_KNIGHT;
+                case ROOK -> pieceChar = EscapeSequences.WHITE_ROOK;
+                case PAWN -> pieceChar = EscapeSequences.WHITE_PAWN;
+            }
+        } else {
+            switch (type){
+                case KING -> pieceChar = EscapeSequences.BLACK_KING;
+                case QUEEN -> pieceChar = EscapeSequences.BLACK_QUEEN;
+                case BISHOP -> pieceChar = EscapeSequences.BLACK_BISHOP;
+                case KNIGHT -> pieceChar = EscapeSequences.BLACK_KNIGHT;
+                case ROOK -> pieceChar = EscapeSequences.BLACK_ROOK;
+                case PAWN -> pieceChar = EscapeSequences.BLACK_PAWN;
+            }
+        }
+
+        return pieceChar;
     }
 
     @Override
