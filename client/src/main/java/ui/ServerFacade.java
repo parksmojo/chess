@@ -43,11 +43,6 @@ public class ServerFacade {
         this.makeRequest("DELETE",path,currentAuthToken,null,null);
         currentAuthToken = null;
     }
-    public void logout(String authToken) throws ResponseException {
-        String path = "/session";
-        this.makeRequest("DELETE",path,authToken,null,null);
-        currentAuthToken = null;
-    }
 
     public int newGame(String gameName) throws ResponseException {
         String path = "/game";
@@ -55,23 +50,11 @@ public class ServerFacade {
         record GameIDResponse(int gameID) { }
         return this.makeRequest("POST",path,currentAuthToken,body,GameIDResponse.class).gameID();
     }
-    public int newGame(String authToken, String gameName) throws ResponseException {
-        String path = "/game";
-        Object body = Map.of("gameName",gameName);
-        record GameIDResponse(int gameID) { }
-        return this.makeRequest("POST",path,authToken,body,GameIDResponse.class).gameID();
-    }
 
     public GameData[] listGames() throws ResponseException {
         String path = "/game";
         record listGameData(GameData[] games){}
         var response = this.makeRequest("GET",path,currentAuthToken,null, listGameData.class);
-        return response.games;
-    }
-    public GameData[] listGames(String authToken) throws ResponseException {
-        String path = "/game";
-        record listGameData(GameData[] games){}
-        var response = this.makeRequest("GET",path,authToken,null, listGameData.class);
         return response.games;
     }
 
@@ -84,11 +67,6 @@ public class ServerFacade {
             body = Map.of("gameID",gameID);
         }
         this.makeRequest("PUT",path,currentAuthToken,body,null);
-    }
-    public void joinGame(String authToken, ChessGame.TeamColor ClientColor, int gameID) throws ResponseException {
-        String path = "/game";
-        Object body = Map.of("playerColor",ClientColor,"gameID",gameID);
-        this.makeRequest("PUT",path,authToken,body,null);
     }
 
 

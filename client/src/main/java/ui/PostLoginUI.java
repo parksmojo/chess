@@ -70,7 +70,9 @@ public class PostLoginUI extends UIHelper{
         try{
             GameData[] games = server.listGames();
             for(GameData game : games){
-                System.out.printf("\t[%d] %s - { '%s' | '%s' }%n",game.gameID(), game.gameName(), game.whiteUsername(), game.blackUsername());
+                String white = game.whiteUsername() == null ? "" : game.whiteUsername();
+                String black = game.blackUsername() == null ? "" : game.blackUsername();
+                System.out.printf("\t[%d] %s - { '%s' | '%s' }%n",game.gameID(), game.gameName(), white, black);
             }
         } catch (ResponseException e) {
             printError(e.StatusCode());
