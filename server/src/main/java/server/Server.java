@@ -4,6 +4,7 @@ import chess.ChessGame;
 import com.google.gson.Gson;
 import dataAccess.DatabaseSetUp;
 import model.*;
+import server.websocket.WebSocketHandler;
 import service.*;
 import spark.*;
 
@@ -13,6 +14,7 @@ import java.util.Map;
 public class Server {
     private final GameService gameService = new GameService();
     private final UserService userService = new UserService();
+    private final WebSocketHandler webSocketHandler = new WebSocketHandler();
 
     public Server(){
         new DatabaseSetUp();
@@ -20,6 +22,7 @@ public class Server {
 
     public int run(int desiredPort) {
         Spark.port(desiredPort);
+        Spark.webSocket("/connect", Server.class);
 
         Spark.staticFiles.location("web");
 

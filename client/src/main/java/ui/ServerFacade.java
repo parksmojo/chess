@@ -5,21 +5,41 @@ import com.google.gson.Gson;
 import exception.ResponseException;
 import model.*;
 
+import javax.websocket.*;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Map;
 
-public class ServerFacade {
+public class ServerFacade extends Endpoint {
     private static String serverURL = "http://localhost:";
+    Session session;
     private String currentAuthToken = null;
 
-    public ServerFacade(int port) {
-        serverURL += Integer.toString(port);
+    public ServerFacade(int port) throws ResponseException {
+        try {
+            serverURL += Integer.toString(port);
+
+            URI socketURI = new URI(serverURL.replace("http", "ws") + "/connect");
+
+            WebSocketContainer container = ContainerProvider.getWebSocketContainer();
+            this.session = container.connectToServer(this, socketURI);
+
+            //set message handler
+            this.session.addMessageHandler(new MessageHandler.Whole<String>() {
+                @Override
+                public void onMessage(String message) {
+                    System.out.println(message);
+                }
+            });
+        } catch (DeploymentException | IOException | URISyntaxException ex) {
+            throw new ResponseException(500, ex.getMessage());
+        }
     }
 
     public AuthData register(String username, String password, String email) throws ResponseException {
@@ -125,4 +145,7 @@ public class ServerFacade {
         return status / 100 == 2;
     }
 
+    @Override
+    public void onOpen(Session session, EndpointConfig endpointConfig) {
+    }
 }
