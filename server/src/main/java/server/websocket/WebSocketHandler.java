@@ -85,7 +85,7 @@ public class WebSocketHandler {
     // Message Functions
     private void joinMessages(int gameID, String username, ChessGame.TeamColor team) throws IOException {
         String teamString = team == null ? "observer" : team.toString();
-        ChessGame game = gameService.findGame(gameID).game();
+        GameData game = gameService.findGame(gameID);
         ServerMessage loadMessage = new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME);
         loadMessage.SetServerMessageValue(game);
         sendMessage(gameID,loadMessage, username);

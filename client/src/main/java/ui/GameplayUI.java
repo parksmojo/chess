@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Scanner;
 
-public class GameplayUI extends UIHelper{
+public class GameplayUI extends UIHelper implements GameHandler {
     private static String currUser;
     private static ChessGame.TeamColor userTeam;
     private static GameData game;
@@ -19,8 +19,19 @@ public class GameplayUI extends UIHelper{
         currUser = user;
         game = gameModel;
         userTeam = team;
-        displayBoard();
         run();
+    }
+
+    @Override
+    public void updateGame(GameData newGame) {
+        game = newGame;
+        displayBoard();
+        System.out.print("[" + currUser + "] PLAYING >>> ");
+    }
+
+    @Override
+    public void printMessage(String message) {
+
     }
 
     private static void run() {

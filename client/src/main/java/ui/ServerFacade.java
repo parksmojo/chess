@@ -4,6 +4,7 @@ import chess.ChessGame;
 import com.google.gson.Gson;
 import exception.ResponseException;
 import model.*;
+import webSocketMessages.serverMessages.ServerMessage;
 import webSocketMessages.userCommands.JoinObserver;
 import webSocketMessages.userCommands.JoinPlayer;
 import webSocketMessages.userCommands.UserGameCommand;
@@ -23,6 +24,7 @@ public class ServerFacade extends Endpoint {
     private static String serverURL = "http://localhost:";
     Session session;
     private String currentAuthToken = null;
+    GameHandler gameUI = new GameplayUI();
 
     public ServerFacade(int port) throws ResponseException {
         try {
@@ -37,7 +39,13 @@ public class ServerFacade extends Endpoint {
             this.session.addMessageHandler(new MessageHandler.Whole<String>() {
                 @Override
                 public void onMessage(String message) {
-                    System.out.printf("Received WS message: %s\n",message);
+//                    System.out.printf("Received WS message: %s\n",message);
+                    ServerMessage serverMessage = new Gson().fromJson(message, ServerMessage.class);
+                    switch (serverMessage.getServerMessageType()){
+                        case LOAD_GAME -> gameUI.updateGame(serverMessage.getGame());
+                        case ERROR -> System.out.println("Not yet");
+                        case NOTIFICATION -> System.out.println("Code under construction");
+                    }
                 }
             });
         } catch (DeploymentException | IOException | URISyntaxException ex) {

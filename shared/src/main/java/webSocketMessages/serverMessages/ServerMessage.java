@@ -1,6 +1,7 @@
 package webSocketMessages.serverMessages;
 
 import chess.ChessGame;
+import model.GameData;
 
 import java.util.Objects;
 
@@ -12,7 +13,7 @@ import java.util.Objects;
  */
 public class ServerMessage {
     ServerMessageType serverMessageType;
-    ChessGame game = null;
+    GameData game = null;
     String errorMessage = null;
     String message = null;
 
@@ -30,7 +31,7 @@ public class ServerMessage {
         return this.serverMessageType;
     }
 
-    public void SetServerMessageValue(ChessGame game){
+    public void SetServerMessageValue(GameData game){
         this.game = game;
     }
     public void SetServerMessageValue(String message){
@@ -39,6 +40,10 @@ public class ServerMessage {
         } else {
             this.message = message;
         }
+    }
+
+    public GameData getGame(){
+        return game;
     }
 
     @Override
