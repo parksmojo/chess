@@ -4,6 +4,7 @@ import chess.ChessGame;
 import com.google.gson.Gson;
 import exception.ResponseException;
 import model.*;
+import webSocketMessages.userCommands.JoinObserver;
 import webSocketMessages.userCommands.JoinPlayer;
 import webSocketMessages.userCommands.UserGameCommand;
 
@@ -91,8 +92,13 @@ public class ServerFacade extends Endpoint {
         this.makeRequest("PUT",path,currentAuthToken,body,null);
 
         try {
-            var message = new JoinPlayer(currentAuthToken, gameID, ClientColor);
-            this.session.getBasicRemote().sendText(new Gson().toJson(message));
+            if(ClientColor == null){
+                var message = new JoinObserver(currentAuthToken, gameID);
+                this.session.getBasicRemote().sendText(new Gson().toJson(message));
+            } else {
+                var message = new JoinPlayer(currentAuthToken, gameID, ClientColor);
+                this.session.getBasicRemote().sendText(new Gson().toJson(message));
+            }
         } catch (IOException ex) {
             throw new ResponseException(500, ex.getMessage());
         }
