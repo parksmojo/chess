@@ -18,6 +18,18 @@ public class UserService {
         }
     }
 
+    public String getUserName(String auth){
+        try {
+            AuthData Token = authDAO.validateAuth(auth);
+            if(Token != null){
+                return Token.username();
+            }
+        } catch (DataAccessException e) {
+            System.out.println(e.getMessage());
+        }
+        return null;
+    }
+
     public AuthData register(String username, String password, String email){
         try {
             if (userDAO.getUser(username) != null) {

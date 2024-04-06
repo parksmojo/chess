@@ -4,6 +4,8 @@ import chess.ChessGame;
 import com.google.gson.Gson;
 import exception.ResponseException;
 import model.*;
+import webSocketMessages.userCommands.JoinPlayer;
+import webSocketMessages.userCommands.UserGameCommand;
 
 import javax.websocket.*;
 import java.io.IOException;
@@ -34,7 +36,7 @@ public class ServerFacade extends Endpoint {
             this.session.addMessageHandler(new MessageHandler.Whole<String>() {
                 @Override
                 public void onMessage(String message) {
-                    System.out.println(message);
+                    System.out.printf("Received WS message: %s\n",message);
                 }
             });
         } catch (DeploymentException | IOException | URISyntaxException ex) {
@@ -87,6 +89,13 @@ public class ServerFacade extends Endpoint {
             body = Map.of("gameID",gameID);
         }
         this.makeRequest("PUT",path,currentAuthToken,body,null);
+
+        try {
+            var message = new JoinPlayer(currentAuthToken, gameID, ClientColor);
+            this.session.getBasicRemote().sendText(new Gson().toJson(message));
+        } catch (IOException ex) {
+            throw new ResponseException(500, ex.getMessage());
+        }
     }
 
 

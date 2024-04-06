@@ -9,13 +9,10 @@ public class Main {
         System.out.printf("Server started on port %d%n", port);
 
         Scanner scanner = new Scanner(System.in);
-
-        try {
-            while(!scanner.nextLine().equals("quit")){
-                System.out.println("type quit to stop server");
-            }
-        } finally {
-            server.stop();
+        while(!scanner.nextLine().equals("q")){
+            System.out.println("type quit to stop server");
         }
+
+        server.stop();
     }
 }
