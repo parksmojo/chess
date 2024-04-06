@@ -10,12 +10,12 @@ import java.util.Objects;
 import java.util.Scanner;
 
 public class PostLoginUI extends UIHelper{
-    private static ServerFacade server;
+    private static ServerFacade facade;
     private static String currUser;
     private static boolean running = true;
 
     public static void start(ServerFacade serverFacade, String user){
-        server = serverFacade;
+        facade = serverFacade;
         currUser = user;
         run();
     }
@@ -68,7 +68,7 @@ public class PostLoginUI extends UIHelper{
 
     private static void list(){
         try{
-            GameData[] games = server.listGames();
+            GameData[] games = facade.listGames();
             for(GameData game : games){
                 String white = game.whiteUsername() == null ? "" : game.whiteUsername();
                 String black = game.blackUsername() == null ? "" : game.blackUsername();
@@ -88,7 +88,7 @@ public class PostLoginUI extends UIHelper{
         }
 
         try{
-            int ID = server.newGame(gameName);
+            int ID = facade.newGame(gameName);
             System.out.println("Game: " + gameName + " created with ID: " + ID);
         } catch (ResponseException e) {
             printError(e.StatusCode());
@@ -116,7 +116,7 @@ public class PostLoginUI extends UIHelper{
         }
 
         try{
-            server.joinGame(team, gameID);
+            facade.joinGame(team, gameID);
             GameplayUI.start(currUser,findGame(gameID));
         } catch (ResponseException e) {
             printError(e.StatusCode());
@@ -133,7 +133,7 @@ public class PostLoginUI extends UIHelper{
         }
 
         try{
-            server.joinGame(null, gameID);
+            facade.joinGame(null, gameID);
             GameplayUI.start(currUser,findGame(gameID));
         } catch (ResponseException e) {
             printError(e.StatusCode());
@@ -142,7 +142,7 @@ public class PostLoginUI extends UIHelper{
 
     private static GameData findGame(int gameID){
         try {
-            GameData[] games = server.listGames();
+            GameData[] games = facade.listGames();
             for(GameData game : games){
                 if(game.gameID() == gameID){
                     return game;
@@ -156,7 +156,7 @@ public class PostLoginUI extends UIHelper{
 
     private static void logout(){
         try {
-            server.logout();
+            facade.logout();
             running = false;
         } catch (ResponseException e) {
             printError(e.StatusCode());

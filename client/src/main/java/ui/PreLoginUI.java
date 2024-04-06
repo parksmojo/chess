@@ -7,10 +7,10 @@ import java.util.Arrays;
 import java.util.Scanner;
 
 public class PreLoginUI extends UIHelper{
-    private static ServerFacade server;
+    private static ServerFacade facade;
 
     public static void start(ServerFacade serverFacade){
-        server = serverFacade;
+        facade = serverFacade;
         run();
     }
 
@@ -65,8 +65,8 @@ public class PreLoginUI extends UIHelper{
         }
 
         try {
-            server.register(username, password, email);
-            PostLoginUI.start(server, username);
+            facade.register(username, password, email);
+            PostLoginUI.start(facade, username);
         } catch (ResponseException e) {
             printError(e.StatusCode());
         }
@@ -84,9 +84,9 @@ public class PreLoginUI extends UIHelper{
         }
 
         try {
-            server.login(username, password);
+            facade.login(username, password);
             System.out.println("logged in as: " + username);
-            PostLoginUI.start(server, username);
+            PostLoginUI.start(facade, username);
         } catch (ResponseException e) {
             printError(e.StatusCode());
         }
