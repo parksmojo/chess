@@ -2,6 +2,7 @@ package server.websocket;
 
 import chess.ChessGame;
 import com.google.gson.Gson;
+import model.GameData;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketError;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
@@ -16,6 +17,7 @@ import webSocketMessages.userCommands.UserGameCommand;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.Objects;
 
 
 @WebSocket
@@ -46,8 +48,16 @@ public class WebSocketHandler {
         String username = userService.getUserName(command.getAuthString());
         int gameID = command.getGameID();
         ChessGame.TeamColor team = command.getPlayerColor();
-        connectionManager.addSessionToGame(gameID, username, session);
-        joinMessages(gameID, username, team);
+
+        GameData game = gameService.findGame(gameID);
+        if((team == ChessGame.TeamColor.WHITE && !Objects.equals(game.whiteUsername(), username))
+                || (team == ChessGame.TeamColor.BLACK && !Objects.equals(game.blackUsername(), username))) {
+
+            sendError(session, "Error: spot already taken");
+        } else {
+            connectionManager.addSessionToGame(gameID, username, session);
+            joinMessages(gameID, username, team);
+        }
     }
 
     private void observe(String message, Session session) throws IOException {
@@ -75,6 +85,14 @@ public class WebSocketHandler {
         Map<String, Connection> sessions = connectionManager.getSessionsForGame(gameID);
         Connection connection = sessions.get(username);
         connection.send(jsonMessage);
+    }
+
+    private void sendError(Session session, String message) throws IOException {
+        ServerMessage serverMsg = new ServerMessage(ServerMessage.ServerMessageType.ERROR);
+        serverMsg.SetServerMessageValue(message);
+        String jsonMessage = new Gson().toJson(serverMsg);
+
+        session.getRemote().sendString(jsonMessage);
     }
 
     private void broadcastMessage(int gameID, ServerMessage message, String notUsername) throws IOException {
