@@ -34,6 +34,11 @@ public class WebSocketHandler {
     public void onMessage(Session session, String message) throws IOException {
         System.out.printf("Received WS message: %s\n",message);
         UserGameCommand command = new Gson().fromJson(message, UserGameCommand.class);
+        if(!checkAuth(command.getAuthString())){
+            sendError(session, "Unauthorized");
+            return;
+        }
+
         switch (command.getCommandType()) {
             case JOIN_PLAYER -> join(message, session);
             case JOIN_OBSERVER -> observe(message, session);
@@ -43,6 +48,7 @@ public class WebSocketHandler {
         }
     }
 
+    // Player Actions
     private void join(String message, Session session) throws IOException {
         JoinPlayer command = new Gson().fromJson(message, JoinPlayer.class);
         String username = userService.getUserName(command.getAuthString());
@@ -50,10 +56,13 @@ public class WebSocketHandler {
         ChessGame.TeamColor team = command.getPlayerColor();
 
         GameData game = gameService.findGame(gameID);
+        if(game == null){
+            sendError(session, "Unavailable gameID");
+            return;
+        }
         if((team == ChessGame.TeamColor.WHITE && !Objects.equals(game.whiteUsername(), username))
                 || (team == ChessGame.TeamColor.BLACK && !Objects.equals(game.blackUsername(), username))) {
-
-            sendError(session, "Error: spot already taken");
+            sendError(session, "Spot already taken");
         } else {
             connectionManager.addSessionToGame(gameID, username, session);
             joinMessages(gameID, username, team);
@@ -64,10 +73,16 @@ public class WebSocketHandler {
         JoinObserver command = new Gson().fromJson(message, JoinObserver.class);
         String username = userService.getUserName(command.getAuthString());
         int gameID = command.getGameID();
+        if(gameService.findGame(gameID) == null){
+            sendError(session, "Unavailable gameID");
+            return;
+        }
         connectionManager.addSessionToGame(gameID, username, session);
         joinMessages(gameID, username, null);
     }
 
+
+    // Message Functions
     private void joinMessages(int gameID, String username, ChessGame.TeamColor team) throws IOException {
         String teamString = team == null ? "observer" : team.toString();
         ChessGame game = gameService.findGame(gameID).game();
@@ -89,7 +104,7 @@ public class WebSocketHandler {
 
     private void sendError(Session session, String message) throws IOException {
         ServerMessage serverMsg = new ServerMessage(ServerMessage.ServerMessageType.ERROR);
-        serverMsg.SetServerMessageValue(message);
+        serverMsg.SetServerMessageValue("Error: " + message);
         String jsonMessage = new Gson().toJson(serverMsg);
 
         session.getRemote().sendString(jsonMessage);
@@ -112,5 +127,10 @@ public class WebSocketHandler {
         for (var c : removeList) {
             connections.remove(c.playerName);
         }
+    }
+
+    // Helper functions
+    boolean checkAuth(String auth){
+        return userService.validateAuth(auth);
     }
 }
