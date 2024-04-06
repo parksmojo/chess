@@ -36,6 +36,16 @@ public class GameService {
         }
     }
 
+    public GameData findGame(int gameID){
+        try{
+            return gameDAO.findGame(gameID);
+
+        } catch (DataAccessException e) {
+            System.out.println(e.getMessage());
+            return null;
+        }
+    }
+
     public ArrayList<GameData> getGames(String authToken){
         try {
             if (authDAO.validateAuth(authToken) == null) {

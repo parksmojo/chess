@@ -26,22 +26,4 @@ public class ConnectionManager {
     public Map<String, Connection> getSessionsForGame(int gameID){
         return sessionMap.get(gameID);
     }
-
-//    public void broadcast(String excludePlayerName, ServerMessage message) throws IOException {
-//        var removeList = new ArrayList<Connection>();
-//        for (var c : sessionMap.values()) {
-//            if (c.session.isOpen()) {
-//                if (!c.playerName.equals(excludePlayerName)) {
-//                    c.send(message.toString());
-//                }
-//            } else {
-//                removeList.add(c);
-//            }
-//        }
-//
-//        // Clean up any connections that were left open.
-//        for (var c : removeList) {
-//            sessionMap.remove(c.username);
-//        }
-//    }
 }
