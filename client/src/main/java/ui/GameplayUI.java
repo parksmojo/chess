@@ -1,6 +1,7 @@
 package ui;
 
 import chess.ChessBoard;
+import chess.ChessGame;
 import chess.ChessPiece;
 import chess.ChessPosition;
 import model.GameData;
@@ -11,11 +12,13 @@ import java.util.Scanner;
 
 public class GameplayUI extends UIHelper{
     private static String currUser;
+    private static ChessGame.TeamColor userTeam;
     private static GameData game;
 
-    public static void start(String user, GameData gameModel){
+    public static void start(String user, GameData gameModel, ChessGame.TeamColor team){
         currUser = user;
         game = gameModel;
+        userTeam = team;
         displayBoard();
         run();
     }
@@ -35,13 +38,20 @@ public class GameplayUI extends UIHelper{
             switch (command) {
                 case "help":
                     System.out.print("""
-                                quit - to quit game
                                 help - to see possible commands
+                                draw - to redraw the chess board
+                                leave - to leave the game
+                                move <piece> <destination> - to make a chess move
+                                resign - to forfeit the game
+                                see <piece> - to highlight legal moves
                                 
                             """);
                     break;
-                case "quit":
+                case "leave":
                     running = false;
+                    break;
+                case "draw":
+                    displayBoard();
                     break;
                 default:
                     System.out.println("Command not recognized. Type help to see a list of commands");
@@ -54,37 +64,38 @@ public class GameplayUI extends UIHelper{
         ChessBoard board = game.game().getBoard();
         String space = EscapeSequences.QUARTER_SPACE;
 
-        printLetters(false);
-        for(int i = 1; i <= 8; i++){
-            System.out.print(space + i + space + "|");
-            for(int j = 8; j >= 1; j--){
-                ChessPiece piece = board.getPiece(new ChessPosition(i,j));
-                if(piece == null){
-                    System.out.print(EscapeSequences.EMPTY);
-                } else {
-                    System.out.print(piece);
+        if(userTeam == ChessGame.TeamColor.BLACK) {
+            printLetters(false);
+            for (int i = 1; i <= 8; i++) {
+                System.out.print(space + i + space + "|");
+                for (int j = 8; j >= 1; j--) {
+                    System.out.print(printPiece(board,i,j));
                 }
-                System.out.print("|");
+                System.out.print(space + i + "\n");
             }
-            System.out.print(space + i + "\n");
-        }
-        printLetters(false);
-        System.out.print("\n");
-        printLetters(true);
-        for(int i = 8; i >= 1; i--){
-            System.out.print(space + i + space + "|");
-            for(int j = 1; j <= 8; j++){
-                ChessPiece piece = board.getPiece(new ChessPosition(i,j));
-                if(piece == null){
-                    System.out.print(EscapeSequences.EMPTY);
-                } else {
-                    System.out.print(piece);
+            printLetters(false);
+        } else {
+            printLetters(true);
+            for (int i = 8; i >= 1; i--) {
+                System.out.print(space + i + space + "|");
+                for (int j = 1; j <= 8; j++) {
+                    System.out.print(printPiece(board,i,j));
                 }
-                System.out.print("|");
+                System.out.print(space + i + "\n");
             }
-            System.out.print(space + i + "\n");
+            printLetters(true);
         }
-        printLetters(true);
+    }
+    private static String printPiece(ChessBoard board, int row, int col){
+        String output = "";
+        ChessPiece piece = board.getPiece(new ChessPosition(row, col));
+        if (piece == null) {
+            output += EscapeSequences.EMPTY;
+        } else {
+            output += piece.toString();
+        }
+        output += "|";
+        return output;
     }
     private static void printLetters(boolean forward){
         System.out.print(EscapeSequences.EMPTY + EscapeSequences.N_SPACE);
