@@ -35,6 +35,9 @@ public class WebSocketHandler {
         switch (command.getCommandType()) {
             case JOIN_PLAYER -> join(message, session);
             case JOIN_OBSERVER -> observe(message, session);
+            case MAKE_MOVE -> System.out.println("Working on it");
+            case LEAVE -> System.out.println("Not ready yet");
+            case RESIGN -> System.out.println("Code not finished");
         }
     }
 
