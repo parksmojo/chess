@@ -47,15 +47,7 @@ public class WebSocketHandler {
         int gameID = command.getGameID();
         ChessGame.TeamColor team = command.getPlayerColor();
         connectionManager.addSessionToGame(gameID, username, session);
-
-        ChessGame game = gameService.findGame(gameID).game();
-        ServerMessage loadMessage = new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME);
-        loadMessage.SetServerMessageValue(game);
-        sendMessage(gameID,loadMessage, username);
-
-        ServerMessage notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
-        notification.SetServerMessageValue(String.format("%s joined the game as %s", username, team));
-        broadcastMessage(gameID,notification, username);
+        joinMessages(gameID, username, team);
     }
 
     private void observe(String message, Session session) throws IOException {
@@ -63,14 +55,18 @@ public class WebSocketHandler {
         String username = userService.getUserName(command.getAuthString());
         int gameID = command.getGameID();
         connectionManager.addSessionToGame(gameID, username, session);
+        joinMessages(gameID, username, null);
+    }
 
+    private void joinMessages(int gameID, String username, ChessGame.TeamColor team) throws IOException {
+        String teamString = team == null ? "observer" : team.toString();
         ChessGame game = gameService.findGame(gameID).game();
         ServerMessage loadMessage = new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME);
         loadMessage.SetServerMessageValue(game);
         sendMessage(gameID,loadMessage, username);
 
         ServerMessage notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
-        notification.SetServerMessageValue(String.format("%s joined the game as observer", username));
+        notification.SetServerMessageValue(String.format("%s joined the game as %s", username, teamString));
         broadcastMessage(gameID,notification, username);
     }
 
