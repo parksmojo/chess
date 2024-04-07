@@ -8,7 +8,6 @@ import webSocketMessages.serverMessages.ServerMessage;
 import webSocketMessages.userCommands.JoinObserver;
 import webSocketMessages.userCommands.JoinPlayer;
 import webSocketMessages.userCommands.Leave;
-import webSocketMessages.userCommands.UserGameCommand;
 
 import javax.websocket.*;
 import java.io.IOException;
@@ -28,9 +27,11 @@ public class ServerFacade extends Endpoint {
     GameHandler gameUI = new GameplayUI();
 
     public ServerFacade(int port) throws ResponseException {
-        try {
-            serverURL += Integer.toString(port);
+        serverURL += Integer.toString(port);
+    }
 
+    private void connect() throws ResponseException {
+        try {
             URI socketURI = new URI(serverURL.replace("http", "ws") + "/connect");
 
             WebSocketContainer container = ContainerProvider.getWebSocketContainer();
@@ -44,14 +45,17 @@ public class ServerFacade extends Endpoint {
                     ServerMessage serverMessage = new Gson().fromJson(message, ServerMessage.class);
                     switch (serverMessage.getServerMessageType()){
                         case LOAD_GAME -> gameUI.updateGame(serverMessage.getGame());
-                        case ERROR -> System.out.println("Error:" + serverMessage.getMessage());
-                        case NOTIFICATION -> System.out.println(serverMessage.getMessage());
+                        case ERROR -> gameUI.printMessage("Error:" + serverMessage.getMessage());
+                        case NOTIFICATION -> gameUI.printMessage(serverMessage.getMessage());
                     }
                 }
             });
         } catch (DeploymentException | IOException | URISyntaxException ex) {
             throw new ResponseException(500, ex.getMessage());
         }
+    }
+    private void disconnect() throws IOException {
+        session.close();
     }
 
     public AuthData register(String username, String password, String email) throws ResponseException {
@@ -100,6 +104,7 @@ public class ServerFacade extends Endpoint {
         }
         this.makeRequest("PUT",path,currentAuthToken,body,null);
 
+        connect();
         try {
             if(ClientColor == null){
                 var message = new JoinObserver(currentAuthToken, gameID);
@@ -117,6 +122,7 @@ public class ServerFacade extends Endpoint {
         try {
             var message = new Leave(currentAuthToken, gameID);
             this.session.getBasicRemote().sendText(new Gson().toJson(message));
+            disconnect();
         } catch (IOException ex) {
             throw new ResponseException(500, ex.getMessage());
         }

@@ -34,7 +34,9 @@ public class GameplayUI extends UIHelper implements GameHandler {
 
     @Override
     public void printMessage(String message) {
-
+        System.out.println();
+        System.out.println(message);
+        System.out.print("[" + currUser + "] PLAYING >>> ");
     }
 
     private static void run() {
