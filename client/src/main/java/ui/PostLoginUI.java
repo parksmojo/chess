@@ -117,7 +117,7 @@ public class PostLoginUI extends UIHelper{
 
         try{
             facade.joinGame(team, gameID);
-            GameplayUI.start(currUser, findGame(gameID), team);
+            GameplayUI.start(facade, currUser, findGame(gameID), team);
         } catch (ResponseException e) {
             printError(e.StatusCode());
         }
@@ -134,7 +134,7 @@ public class PostLoginUI extends UIHelper{
 
         try{
             facade.joinGame(null, gameID);
-            GameplayUI.start(currUser,findGame(gameID), null);
+            GameplayUI.start(facade, currUser,findGame(gameID), null);
         } catch (ResponseException e) {
             printError(e.StatusCode());
         }

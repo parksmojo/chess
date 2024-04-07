@@ -4,6 +4,7 @@ import chess.ChessBoard;
 import chess.ChessGame;
 import chess.ChessPiece;
 import chess.ChessPosition;
+import exception.ResponseException;
 import model.GameData;
 
 import java.util.ArrayList;
@@ -11,11 +12,13 @@ import java.util.Arrays;
 import java.util.Scanner;
 
 public class GameplayUI extends UIHelper implements GameHandler {
+    private static ServerFacade facade;
     private static String currUser;
     private static ChessGame.TeamColor userTeam;
     private static GameData game;
 
-    public static void start(String user, GameData gameModel, ChessGame.TeamColor team){
+    public static void start(ServerFacade serverFacade, String user, GameData gameModel, ChessGame.TeamColor team){
+        facade = serverFacade;
         currUser = user;
         game = gameModel;
         userTeam = team;
@@ -51,14 +54,15 @@ public class GameplayUI extends UIHelper implements GameHandler {
                     System.out.print("""
                                 help - to see possible commands
                                 draw - to redraw the chess board
-                                leave - to leave the game
+                                see <piece> - to highlight legal moves
                                 move <piece> <destination> - to make a chess move
                                 resign - to forfeit the game
-                                see <piece> - to highlight legal moves
+                                leave - to leave the game
                                 
                             """);
                     break;
                 case "leave":
+                    leaveGame();
                     running = false;
                     break;
                 case "draw":
@@ -71,10 +75,19 @@ public class GameplayUI extends UIHelper implements GameHandler {
         }
     }
 
+    private static void leaveGame(){
+        try {
+            facade.leaveGame(game.gameID());
+        } catch (ResponseException e) {
+            printError(e.StatusCode());
+        }
+    }
+
     private static void displayBoard(){
         ChessBoard board = game.game().getBoard();
         String space = EscapeSequences.QUARTER_SPACE;
 
+        System.out.println();
         if(userTeam == ChessGame.TeamColor.BLACK) {
             printLetters(false);
             for (int i = 1; i <= 8; i++) {

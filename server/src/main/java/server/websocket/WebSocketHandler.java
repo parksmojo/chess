@@ -12,6 +12,7 @@ import service.UserService;
 import webSocketMessages.serverMessages.ServerMessage;
 import webSocketMessages.userCommands.JoinObserver;
 import webSocketMessages.userCommands.JoinPlayer;
+import webSocketMessages.userCommands.Leave;
 import webSocketMessages.userCommands.UserGameCommand;
 
 import java.io.IOException;
@@ -38,12 +39,17 @@ public class WebSocketHandler {
             sendError(session, "Unauthorized");
             return;
         }
+        int gameID = command.getGameID();
+        if(gameService.findGame(gameID) == null){
+            sendError(session, "Unavailable gameID");
+            return;
+        }
 
         switch (command.getCommandType()) {
             case JOIN_PLAYER -> join(message, session);
             case JOIN_OBSERVER -> observe(message, session);
             case MAKE_MOVE -> System.out.println("Working on it");
-            case LEAVE -> System.out.println("Not ready yet");
+            case LEAVE -> leaveGame(message, session);
             case RESIGN -> System.out.println("Code not finished");
         }
     }
@@ -56,10 +62,6 @@ public class WebSocketHandler {
         ChessGame.TeamColor team = command.getPlayerColor();
 
         GameData game = gameService.findGame(gameID);
-        if(game == null){
-            sendError(session, "Unavailable gameID");
-            return;
-        }
         if((team == ChessGame.TeamColor.WHITE && !Objects.equals(game.whiteUsername(), username))
                 || (team == ChessGame.TeamColor.BLACK && !Objects.equals(game.blackUsername(), username))) {
             sendError(session, "Spot already taken");
@@ -73,12 +75,18 @@ public class WebSocketHandler {
         JoinObserver command = new Gson().fromJson(message, JoinObserver.class);
         String username = userService.getUserName(command.getAuthString());
         int gameID = command.getGameID();
-        if(gameService.findGame(gameID) == null){
-            sendError(session, "Unavailable gameID");
-            return;
-        }
         connectionManager.addSessionToGame(gameID, username, session);
         joinMessages(gameID, username, null);
+    }
+
+    private void leaveGame(String message, Session session) throws IOException {
+        Leave command = new Gson().fromJson(message, Leave.class);
+        String username = userService.getUserName(command.getAuthString());
+        int gameID = command.getGameID();
+        ServerMessage leaveMessage = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
+        leaveMessage.SetServerMessageValue(String.format("%s left the game",username));
+        broadcastMessage(gameID,leaveMessage,username);
+        connectionManager.removeSessionFromGame(gameID,username,session);
     }
 
 

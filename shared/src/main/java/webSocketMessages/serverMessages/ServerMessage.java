@@ -45,6 +45,13 @@ public class ServerMessage {
     public GameData getGame(){
         return game;
     }
+    public String getMessage(){
+        if(this.serverMessageType == ServerMessageType.ERROR){
+            return errorMessage;
+        } else {
+            return message;
+        }
+    }
 
     @Override
     public boolean equals(Object o) {

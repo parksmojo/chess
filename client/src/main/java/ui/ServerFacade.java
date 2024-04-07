@@ -7,6 +7,7 @@ import model.*;
 import webSocketMessages.serverMessages.ServerMessage;
 import webSocketMessages.userCommands.JoinObserver;
 import webSocketMessages.userCommands.JoinPlayer;
+import webSocketMessages.userCommands.Leave;
 import webSocketMessages.userCommands.UserGameCommand;
 
 import javax.websocket.*;
@@ -43,8 +44,8 @@ public class ServerFacade extends Endpoint {
                     ServerMessage serverMessage = new Gson().fromJson(message, ServerMessage.class);
                     switch (serverMessage.getServerMessageType()){
                         case LOAD_GAME -> gameUI.updateGame(serverMessage.getGame());
-                        case ERROR -> System.out.println("Not yet");
-                        case NOTIFICATION -> System.out.println("Code under construction");
+                        case ERROR -> System.out.println("Error:" + serverMessage.getMessage());
+                        case NOTIFICATION -> System.out.println(serverMessage.getMessage());
                     }
                 }
             });
@@ -107,6 +108,15 @@ public class ServerFacade extends Endpoint {
                 var message = new JoinPlayer(currentAuthToken, gameID, ClientColor);
                 this.session.getBasicRemote().sendText(new Gson().toJson(message));
             }
+        } catch (IOException ex) {
+            throw new ResponseException(500, ex.getMessage());
+        }
+    }
+
+    public void leaveGame(int gameID) throws ResponseException {
+        try {
+            var message = new Leave(currentAuthToken, gameID);
+            this.session.getBasicRemote().sendText(new Gson().toJson(message));
         } catch (IOException ex) {
             throw new ResponseException(500, ex.getMessage());
         }
