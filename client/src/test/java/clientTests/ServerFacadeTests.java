@@ -59,7 +59,7 @@ public class ServerFacadeTests {
         try {
             facade.register("player1", "password6", "p1F@email.com");
         } catch (ResponseException e){
-            errorCode = e.StatusCode();
+            errorCode = e.statusCode();
         }
         Assertions.assertEquals(403, errorCode);
     }
@@ -77,7 +77,7 @@ public class ServerFacadeTests {
         try {
             facade.login("player1", "wrong");
         } catch (ResponseException e){
-            errorCode = e.StatusCode();
+            errorCode = e.statusCode();
         }
         Assertions.assertEquals(401, errorCode);
     }
@@ -90,7 +90,7 @@ public class ServerFacadeTests {
         try {
             facade.logout();
         } catch (ResponseException e){
-            errorCode = e.StatusCode();
+            errorCode = e.statusCode();
         }
         Assertions.assertEquals(401, errorCode);
     }

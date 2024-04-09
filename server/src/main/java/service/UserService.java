@@ -20,9 +20,9 @@ public class UserService {
 
     public String getUserName(String auth){
         try {
-            AuthData Token = authDAO.validateAuth(auth);
-            if(Token != null){
-                return Token.username();
+            AuthData authToken = authDAO.validateAuth(auth);
+            if(authToken != null){
+                return authToken.username();
             }
         } catch (DataAccessException e) {
             System.out.println(e.getMessage());

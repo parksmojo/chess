@@ -88,16 +88,16 @@ public class ServerFacade extends Endpoint {
 
     public GameData[] listGames() throws ResponseException {
         String path = "/game";
-        record listGameData(GameData[] games){}
-        var response = this.makeRequest("GET",path,currentAuthToken,null, listGameData.class);
+        record ListGameData(GameData[] games){}
+        var response = this.makeRequest("GET",path,currentAuthToken,null, ListGameData.class);
         return response.games;
     }
 
-    public void joinGame(ChessGame.TeamColor ClientColor, int gameID) throws ResponseException {
+    public void joinGame(ChessGame.TeamColor clientColor, int gameID) throws ResponseException {
         String path = "/game";
         Object body;
-        if(ClientColor != null){
-            body = Map.of("playerColor",ClientColor,"gameID",gameID);
+        if(clientColor != null){
+            body = Map.of("playerColor",clientColor,"gameID",gameID);
         } else {
             body = Map.of("gameID",gameID);
         }
@@ -105,11 +105,11 @@ public class ServerFacade extends Endpoint {
 
         connect();
         try {
-            if(ClientColor == null){
+            if(clientColor == null){
                 var message = new JoinObserver(currentAuthToken, gameID);
                 this.session.getBasicRemote().sendText(new Gson().toJson(message));
             } else {
-                var message = new JoinPlayer(currentAuthToken, gameID, ClientColor);
+                var message = new JoinPlayer(currentAuthToken, gameID, clientColor);
                 this.session.getBasicRemote().sendText(new Gson().toJson(message));
             }
         } catch (IOException ex) {
@@ -159,7 +159,7 @@ public class ServerFacade extends Endpoint {
             throwIfNotSuccessful(http);
             return readBody(http, responseClass);
         } catch (ResponseException ex){
-            throw new ResponseException(ex.StatusCode(),ex.getMessage());
+            throw new ResponseException(ex.statusCode(),ex.getMessage());
         } catch (Exception ex) {
             throw new ResponseException(500, ex.getMessage());
         }

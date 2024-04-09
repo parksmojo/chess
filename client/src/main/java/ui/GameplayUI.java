@@ -110,7 +110,7 @@ public class GameplayUI extends UIHelper implements GameHandler {
         try {
             facade.makeMove(game.gameID(), userMove);
         } catch (ResponseException e) {
-            printError(e.StatusCode());
+            printError(e.statusCode());
         }
     }
     private static ChessPosition convertPos(String input){
@@ -151,7 +151,7 @@ public class GameplayUI extends UIHelper implements GameHandler {
         try {
             facade.leaveGame(game.gameID());
         } catch (ResponseException e) {
-            printError(e.StatusCode());
+            printError(e.statusCode());
         }
     }
 
@@ -159,7 +159,7 @@ public class GameplayUI extends UIHelper implements GameHandler {
         try {
             facade.resign(game.gameID());
         } catch (ResponseException e) {
-            printError(e.StatusCode());
+            printError(e.statusCode());
         }
     }
 

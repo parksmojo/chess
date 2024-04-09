@@ -75,7 +75,7 @@ public class PostLoginUI extends UIHelper{
                 System.out.printf("\t[%d] %s - { '%s' | '%s' }%n",game.gameID(), game.gameName(), white, black);
             }
         } catch (ResponseException e) {
-            printError(e.StatusCode());
+            printError(e.statusCode());
         }
     }
 
@@ -88,10 +88,10 @@ public class PostLoginUI extends UIHelper{
         }
 
         try{
-            int ID = facade.newGame(gameName);
-            System.out.println("Game: " + gameName + " created with ID: " + ID);
+            int gameID = facade.newGame(gameName);
+            System.out.println("Game: " + gameName + " created with ID: " + gameID);
         } catch (ResponseException e) {
-            printError(e.StatusCode());
+            printError(e.statusCode());
         }
     }
 
@@ -119,7 +119,7 @@ public class PostLoginUI extends UIHelper{
             facade.joinGame(team, gameID);
             GameplayUI.start(facade, currUser, findGame(gameID), team);
         } catch (ResponseException e) {
-            printError(e.StatusCode());
+            printError(e.statusCode());
         }
     }
 
@@ -136,7 +136,7 @@ public class PostLoginUI extends UIHelper{
             facade.joinGame(null, gameID);
             GameplayUI.start(facade, currUser,findGame(gameID), null);
         } catch (ResponseException e) {
-            printError(e.StatusCode());
+            printError(e.statusCode());
         }
     }
 
@@ -149,7 +149,7 @@ public class PostLoginUI extends UIHelper{
                 }
             }
         } catch (ResponseException e) {
-            printError(e.StatusCode());
+            printError(e.statusCode());
         }
         return null;
     }
@@ -159,7 +159,7 @@ public class PostLoginUI extends UIHelper{
             facade.logout();
             running = false;
         } catch (ResponseException e) {
-            printError(e.StatusCode());
+            printError(e.statusCode());
         }
     }
 }

@@ -68,7 +68,7 @@ public class PreLoginUI extends UIHelper{
             facade.register(username, password, email);
             PostLoginUI.start(facade, username);
         } catch (ResponseException e) {
-            printError(e.StatusCode());
+            printError(e.statusCode());
         }
     }
 
@@ -88,7 +88,7 @@ public class PreLoginUI extends UIHelper{
             System.out.println("logged in as: " + username);
             PostLoginUI.start(facade, username);
         } catch (ResponseException e) {
-            printError(e.StatusCode());
+            printError(e.statusCode());
         }
     }
 }
