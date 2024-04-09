@@ -6,6 +6,7 @@ import model.GameData;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Scanner;
 
 public class GameplayUI extends UIHelper implements GameHandler {
@@ -25,7 +26,7 @@ public class GameplayUI extends UIHelper implements GameHandler {
     @Override
     public void updateGame(GameData newGame) {
         game = newGame;
-        displayBoard();
+        System.out.print(displayBoard(null));
         System.out.print("[" + currUser + "] PLAYING >>> ");
     }
 
@@ -68,7 +69,10 @@ public class GameplayUI extends UIHelper implements GameHandler {
                     movePiece(args);
                     break;
                 case "draw":
-                    displayBoard();
+                    System.out.print(displayBoard(null));
+                    break;
+                case "see":
+                    seePaths(args);
                     break;
                 case "resign":
                     resign();
@@ -86,20 +90,17 @@ public class GameplayUI extends UIHelper implements GameHandler {
             return;
         }
 
-        String startStr;
-        String endStr;
-        String promoStr;
+        ChessPosition startPos;
+        ChessPosition endPos;
+        ChessPiece.PieceType promoPiece;
         if(hasGoodParams(args.size(), 3)){
-            startStr = args.get(1);
-            endStr = args.get(2);
-            promoStr = args.get(3);
+            startPos = convertPos(args.get(1));
+            endPos = convertPos(args.get(2));
+            promoPiece = convertPiece(args.get(3));
         } else {
             return;
         }
 
-        ChessPosition startPos = convertPos(startStr);
-        ChessPosition endPos = convertPos(endStr);
-        ChessPiece.PieceType promoPiece = convertPiece(promoStr);
         if(startPos == null || endPos == null){
             System.out.println("Error: invalid positions");
             return;
@@ -162,56 +163,90 @@ public class GameplayUI extends UIHelper implements GameHandler {
         }
     }
 
-    private static void displayBoard(){
+    private static void seePaths(ArrayList<String> args){
+        ChessPosition pos;
+        if(hasGoodParams(args.size(), 1)){
+            pos = convertPos(args.get(1));
+        } else {
+            return;
+        }
+
+        Collection<ChessMove> moves = game.game().validMoves(pos);
+        Collection<ChessPosition> options = new ArrayList<>();
+        options.add(pos);
+        for(ChessMove move : moves){
+            options.add(move.getEndPosition());
+        }
+        System.out.print(displayBoard(options));
+    }
+
+    private static String displayBoard(Collection<ChessPosition> paths){
+        StringBuilder output = new StringBuilder();
         ChessBoard board = game.game().getBoard();
         String space = EscapeSequences.QUARTER_SPACE;
 
-        System.out.println();
+        output.append("\n"); //System.out.println();
         if(userTeam == ChessGame.TeamColor.BLACK) {
-            printLetters(false);
+            output.append(printLetters(false));
             for (int i = 1; i <= 8; i++) {
-                System.out.print(space + i + space + "|");
+                output.append(String.format("%s%d%s|",space,i,space)); //System.out.print(space + i + space + "|");
                 for (int j = 8; j >= 1; j--) {
-                    System.out.print(printPiece(board,i,j));
+                    output.append(printPiece(board,i,j,paths)); //System.out.print(printPiece(board,i,j,paths));
                 }
-                System.out.print(space + i + "\n");
+                output.append(String.format("%s%d\n",space,i)); //System.out.print(space + i + "\n");
             }
-            printLetters(false);
+            output.append(printLetters(false));
         } else {
-            printLetters(true);
+            output.append(printLetters(true));
             for (int i = 8; i >= 1; i--) {
-                System.out.print(space + i + space + "|");
+                output.append(String.format("%s%d%s|",space,i,space)); //System.out.print(space + i + space + "|");
                 for (int j = 1; j <= 8; j++) {
-                    System.out.print(printPiece(board,i,j));
+                    output.append(printPiece(board,i,j,paths)); //System.out.print(printPiece(board,i,j,paths));
                 }
-                System.out.print(space + i + "\n");
+                output.append(String.format("%s%d\n",space,i)); //System.out.print(space + i + "\n");
             }
-            printLetters(true);
+            output.append(printLetters(true));
         }
+        return output.toString();
     }
-    private static String printPiece(ChessBoard board, int row, int col){
+    private static String printPiece(ChessBoard board, int row, int col,Collection<ChessPosition> paths){
         String output = "";
-        ChessPiece piece = board.getPiece(new ChessPosition(row, col));
+        String highlight = "";
+        String dehighlight = "";
+        ChessPosition pos = new ChessPosition(row, col);
+        ChessPiece piece = board.getPiece(pos);
+        if(paths != null){
+            if(paths.contains(pos)){
+                highlight = EscapeSequences.SET_BG_COLOR_LIGHT_GREY;
+                dehighlight = EscapeSequences.SET_BG_COLOR_DARK_GREY;
+            }
+        }
+
+        output += highlight;
         if (piece == null) {
             output += EscapeSequences.EMPTY;
         } else {
             output += piece.toString();
         }
+        output += dehighlight;
+
         output += "|";
         return output;
     }
-    private static void printLetters(boolean forward){
-        System.out.print(EscapeSequences.EMPTY + EscapeSequences.N_SPACE);
+    private static String printLetters(boolean forward){
+        StringBuilder output = new StringBuilder();
+        output.append(EscapeSequences.EMPTY + EscapeSequences.N_SPACE); //System.out.print(EscapeSequences.EMPTY + EscapeSequences.N_SPACE);
         String space = EscapeSequences.QUARTER_SPACE;
         if(forward){
             for(char c = 'a'; c <= 'h'; ++c){
-                System.out.print(space + c + space + EscapeSequences.N_SPACE);
+                output.append(String.format("%s%s%s%s",space, c, space, EscapeSequences.N_SPACE)); //System.out.print(space + c + space + EscapeSequences.N_SPACE);
             }
         } else{
             for(char c = 'h'; c >= 'a'; --c){
-                System.out.print(space + c + space + EscapeSequences.N_SPACE);
+                output.append(String.format("%s%s%s%s",space, c, space, EscapeSequences.N_SPACE)); //System.out.print(space + c + space + EscapeSequences.N_SPACE);
             }
         }
-        System.out.print("\n");
+        output.append("\n"); //System.out.print("\n");
+        return output.toString();
     }
 }

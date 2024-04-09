@@ -3,7 +3,6 @@ package server.websocket;
 import chess.ChessGame;
 import chess.InvalidMoveException;
 import com.google.gson.Gson;
-import com.google.gson.JsonObject;
 import model.GameData;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketError;
@@ -32,7 +31,7 @@ public class WebSocketHandler {
 
     @OnWebSocketMessage
     public void onMessage(Session session, String message) throws IOException {
-        System.out.printf("Received WS message: %s\n",message);
+//        System.out.printf("Received WS message: %s\n",message);
         UserGameCommand command = new Gson().fromJson(message, UserGameCommand.class);
         if(!checkAuth(command.getAuthString())){
             sendError(session, "Unauthorized");
