@@ -1,9 +1,6 @@
 package ui;
 
-import chess.ChessBoard;
-import chess.ChessGame;
-import chess.ChessPiece;
-import chess.ChessPosition;
+import chess.*;
 import exception.ResponseException;
 import model.GameData;
 
@@ -67,6 +64,9 @@ public class GameplayUI extends UIHelper implements GameHandler {
                     leaveGame();
                     running = false;
                     break;
+                case "move":
+                    movePiece(args);
+                    break;
                 case "draw":
                     displayBoard();
                     break;
@@ -75,6 +75,72 @@ public class GameplayUI extends UIHelper implements GameHandler {
                     break;
             }
         }
+    }
+
+    private static void movePiece(ArrayList<String> args){
+        if(game.game().getTeamTurn() != userTeam){
+            System.out.println("Not your turn");
+            return;
+        }
+
+        String startStr;
+        String endStr;
+        String promoStr;
+        if(hasGoodParams(args.size(), 3)){
+            startStr = args.get(1);
+            endStr = args.get(2);
+            promoStr = args.get(3);
+        } else {
+            return;
+        }
+
+        ChessPosition startPos = convertPos(startStr);
+        ChessPosition endPos = convertPos(endStr);
+        ChessPiece.PieceType promoPiece = convertPiece(promoStr);
+        if(startPos == null || endPos == null){
+            System.out.println("Error: invalid positions");
+            return;
+        }
+
+        ChessMove userMove = new ChessMove(startPos, endPos, promoPiece);
+        try {
+            facade.makeMove(game.gameID(), userMove);
+        } catch (ResponseException e) {
+            printError(e.StatusCode());
+        }
+    }
+    private static ChessPosition convertPos(String input){
+        int row;
+        int col;
+        if(input.length() == 2){
+            row = Character.getNumericValue(input.charAt(1));
+            col = switch (input.charAt(0)){
+                case 'a' -> 1;
+                case 'b' -> 2;
+                case 'c' -> 3;
+                case 'd' -> 4;
+                case 'e' -> 5;
+                case 'f' -> 6;
+                case 'g' -> 7;
+                case 'h' -> 8;
+                default -> 0;
+            };
+            if(col == 0 || row < 1 || row > 8) {
+                return null;
+            }
+            return new ChessPosition(row, col);
+        }
+        return null;
+    }
+    private static ChessPiece.PieceType convertPiece(String input){
+        return switch (input.toLowerCase()){
+            case "king" -> ChessPiece.PieceType.KING;
+            case "queen" -> ChessPiece.PieceType.QUEEN;
+            case "bishop" -> ChessPiece.PieceType.BISHOP;
+            case "rook" -> ChessPiece.PieceType.ROOK;
+            case "knight" -> ChessPiece.PieceType.KNIGHT;
+            default -> null;
+        };
     }
 
     private static void leaveGame(){

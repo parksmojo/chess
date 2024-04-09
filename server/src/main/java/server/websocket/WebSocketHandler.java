@@ -1,6 +1,7 @@
 package server.websocket;
 
 import chess.ChessGame;
+import chess.InvalidMoveException;
 import com.google.gson.Gson;
 import model.GameData;
 import org.eclipse.jetty.websocket.api.Session;
@@ -10,10 +11,7 @@ import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import service.GameService;
 import service.UserService;
 import webSocketMessages.serverMessages.ServerMessage;
-import webSocketMessages.userCommands.JoinObserver;
-import webSocketMessages.userCommands.JoinPlayer;
-import webSocketMessages.userCommands.Leave;
-import webSocketMessages.userCommands.UserGameCommand;
+import webSocketMessages.userCommands.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -48,13 +46,51 @@ public class WebSocketHandler {
         switch (command.getCommandType()) {
             case JOIN_PLAYER -> join(message, session);
             case JOIN_OBSERVER -> observe(message, session);
-            case MAKE_MOVE -> System.out.println("Working on it");
+            case MAKE_MOVE -> makeMove(message);
             case LEAVE -> leaveGame(message, session);
             case RESIGN -> System.out.println("Code not finished");
         }
     }
 
     // Player Actions
+    private void makeMove(String message) throws IOException {
+        MakeMove command = new Gson().fromJson(message, MakeMove.class);
+        String username = userService.getUserName(command.getAuthString());
+        GameData game = gameService.findGame(command.getGameID());
+        ChessGame.TeamColor userTeam = getUserTeam(username,game);
+        ChessGame.TeamColor pieceTeam = game.game().getBoard().getPiece(command.getMove().getStartPosition()).getTeamColor();
+        try {
+            if(userTeam != pieceTeam){
+                throw new InvalidMoveException("Incorrect team");
+            }
+            game.game().makeMove(command.getMove());
+        } catch (InvalidMoveException e) {
+            ServerMessage error = new ServerMessage(ServerMessage.ServerMessageType.ERROR);
+            error.setServerMessageValue(e.getMessage());
+            sendMessage(game.gameID(), error, username);
+            return;
+        }
+
+        gameService.setGame(game);
+        ServerMessage loadMessage = new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME);
+        loadMessage.setServerMessageValue(game);
+
+        ServerMessage notif = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
+        notif.setServerMessageValue(String.format("%s moved ...",username));
+
+        broadcastMessage(game.gameID(), loadMessage, null);
+        broadcastMessage(game.gameID(), notif, username);
+    }
+    private ChessGame.TeamColor getUserTeam(String username, GameData game){
+        if(username.equals(game.whiteUsername())){
+            return ChessGame.TeamColor.WHITE;
+        } else if(username.equals(game.blackUsername())){
+            return ChessGame.TeamColor.BLACK;
+        } else {
+            return null;
+        }
+    }
+
     private void join(String message, Session session) throws IOException {
         JoinPlayer command = new Gson().fromJson(message, JoinPlayer.class);
         String username = userService.getUserName(command.getAuthString());
@@ -84,7 +120,7 @@ public class WebSocketHandler {
         String username = userService.getUserName(command.getAuthString());
         int gameID = command.getGameID();
         ServerMessage leaveMessage = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
-        leaveMessage.SetServerMessageValue(String.format("%s left the game",username));
+        leaveMessage.setServerMessageValue(String.format("%s left the game",username));
         broadcastMessage(gameID,leaveMessage,username);
         connectionManager.removeSessionFromGame(gameID,username,session);
     }
@@ -95,11 +131,11 @@ public class WebSocketHandler {
         String teamString = team == null ? "observer" : team.toString();
         GameData game = gameService.findGame(gameID);
         ServerMessage loadMessage = new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME);
-        loadMessage.SetServerMessageValue(game);
+        loadMessage.setServerMessageValue(game);
         sendMessage(gameID,loadMessage, username);
 
         ServerMessage notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
-        notification.SetServerMessageValue(String.format("%s joined the game as %s", username, teamString));
+        notification.setServerMessageValue(String.format("%s joined the game as %s", username, teamString));
         broadcastMessage(gameID,notification, username);
     }
 
@@ -112,7 +148,7 @@ public class WebSocketHandler {
 
     private void sendError(Session session, String message) throws IOException {
         ServerMessage serverMsg = new ServerMessage(ServerMessage.ServerMessageType.ERROR);
-        serverMsg.SetServerMessageValue("Error: " + message);
+        serverMsg.setServerMessageValue("Error: " + message);
         String jsonMessage = new Gson().toJson(serverMsg);
 
         session.getRemote().sendString(jsonMessage);
