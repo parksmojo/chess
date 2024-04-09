@@ -3,6 +3,7 @@ package server.websocket;
 import chess.ChessGame;
 import chess.InvalidMoveException;
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import model.GameData;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketError;
@@ -48,7 +49,7 @@ public class WebSocketHandler {
             case JOIN_OBSERVER -> observe(message, session);
             case MAKE_MOVE -> makeMove(message);
             case LEAVE -> leaveGame(message, session);
-            case RESIGN -> System.out.println("Code not finished");
+            case RESIGN -> resign(message);
         }
     }
 
@@ -59,8 +60,9 @@ public class WebSocketHandler {
         GameData game = gameService.findGame(command.getGameID());
         ChessGame.TeamColor userTeam = getUserTeam(username,game);
         ChessGame.TeamColor pieceTeam = game.game().getBoard().getPiece(command.getMove().getStartPosition()).getTeamColor();
+        ChessGame.TeamColor gameTeam = game.game().getTeamTurn();
         try {
-            if(userTeam != pieceTeam){
+            if(userTeam != pieceTeam || userTeam != gameTeam){
                 throw new InvalidMoveException("Incorrect team");
             }
             game.game().makeMove(command.getMove());
@@ -123,6 +125,29 @@ public class WebSocketHandler {
         leaveMessage.setServerMessageValue(String.format("%s left the game",username));
         broadcastMessage(gameID,leaveMessage,username);
         connectionManager.removeSessionFromGame(gameID,username,session);
+    }
+
+    private void resign(String message) throws IOException {
+        Resign command = new Gson().fromJson(message, Resign.class);
+        String username = userService.getUserName(command.getAuthString());
+        int gameID = command.getGameID();
+        GameData game = gameService.findGame(command.getGameID());
+        ChessGame.TeamColor userTeam = getUserTeam(username,game);
+        ChessGame.TeamColor gameTeam = game.game().getTeamTurn();
+
+        if(userTeam == null || gameTeam == ChessGame.TeamColor.NULL) {
+            ServerMessage error = new ServerMessage(ServerMessage.ServerMessageType.ERROR);
+            error.setServerMessageValue("Cannot resign");
+            sendMessage(game.gameID(), error, username);
+            return;
+        }
+
+        game.game().setTeamTurn(ChessGame.TeamColor.NULL);
+        gameService.setGame(game);
+
+        ServerMessage resignMessage = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
+        resignMessage.setServerMessageValue(String.format("%s resigned",username));
+        broadcastMessage(gameID,resignMessage,null);
     }
 
 

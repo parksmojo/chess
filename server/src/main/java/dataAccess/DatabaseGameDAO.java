@@ -2,6 +2,7 @@ package dataAccess;
 
 import chess.ChessGame;
 import com.google.gson.Gson;
+import com.google.gson.JsonNull;
 import model.GameData;
 
 import java.sql.Statement;

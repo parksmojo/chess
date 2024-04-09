@@ -54,7 +54,7 @@ public class GameplayUI extends UIHelper implements GameHandler {
                                 help - to see possible commands
                                 draw - to redraw the chess board
                                 see <piece> - to highlight legal moves
-                                move <piece> <destination> - to make a chess move
+                                move <piece> <destination> <promotion piece | 'none'> - to make a chess move
                                 resign - to forfeit the game
                                 leave - to leave the game
                                 
@@ -69,6 +69,9 @@ public class GameplayUI extends UIHelper implements GameHandler {
                     break;
                 case "draw":
                     displayBoard();
+                    break;
+                case "resign":
+                    resign();
                     break;
                 default:
                     System.out.println("Command not recognized. Type help to see a list of commands");
@@ -146,6 +149,14 @@ public class GameplayUI extends UIHelper implements GameHandler {
     private static void leaveGame(){
         try {
             facade.leaveGame(game.gameID());
+        } catch (ResponseException e) {
+            printError(e.StatusCode());
+        }
+    }
+
+    private static void resign(){
+        try {
+            facade.resign(game.gameID());
         } catch (ResponseException e) {
             printError(e.StatusCode());
         }

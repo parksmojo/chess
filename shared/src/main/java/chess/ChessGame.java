@@ -38,7 +38,8 @@ public class ChessGame {
      */
     public enum TeamColor {
         WHITE,
-        BLACK
+        BLACK,
+        NULL
     }
 
     /**
@@ -105,7 +106,7 @@ public class ChessGame {
 
                     if(teamTurn.equals(TeamColor.WHITE)){
                         teamTurn = TeamColor.BLACK;
-                    } else {
+                    } else if(teamTurn.equals(TeamColor.BLACK)){
                         teamTurn = TeamColor.WHITE;
                     }
 
