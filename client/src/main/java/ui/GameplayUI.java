@@ -90,10 +90,12 @@ public class GameplayUI extends UIHelper implements GameHandler {
             return;
         }
 
+        String moveStr;
         ChessPosition startPos;
         ChessPosition endPos;
         ChessPiece.PieceType promoPiece;
         if(hasGoodParams(args.size(), 3)){
+            moveStr = args.get(1) + "->" + args.get(2);
             startPos = convertPos(args.get(1));
             endPos = convertPos(args.get(2));
             promoPiece = convertPiece(args.get(3));
@@ -108,7 +110,7 @@ public class GameplayUI extends UIHelper implements GameHandler {
 
         ChessMove userMove = new ChessMove(startPos, endPos, promoPiece);
         try {
-            facade.makeMove(game.gameID(), userMove);
+            facade.makeMove(game.gameID(), userMove, moveStr);
         } catch (ResponseException e) {
             printError(e.statusCode());
         }

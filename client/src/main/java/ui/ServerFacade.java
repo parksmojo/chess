@@ -136,9 +136,9 @@ public class ServerFacade extends Endpoint {
         }
     }
 
-    public void makeMove(int gameID, ChessMove move) throws ResponseException {
+    public void makeMove(int gameID, ChessMove move, String moveStr) throws ResponseException {
         try {
-            var message = new MakeMove(currentAuthToken, gameID, move);
+            var message = new MakeMove(currentAuthToken, gameID, move, moveStr);
             this.session.getBasicRemote().sendText(new Gson().toJson(message));
         } catch (IOException ex) {
             throw new ResponseException(500, ex.getMessage());

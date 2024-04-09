@@ -77,7 +77,7 @@ public class WebSocketHandler {
         loadMessage.setServerMessageValue(game);
 
         ServerMessage notif = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
-        notif.setServerMessageValue(String.format("%s moved ...",username));
+        notif.setServerMessageValue(String.format("%s moved %s",username,command.getMoveStr()));
 
         broadcastMessage(game.gameID(), loadMessage, null);
         broadcastMessage(game.gameID(), notif, username);
