@@ -14,6 +14,11 @@ public class MemoryGameDAO implements GameDAO {
     }
 
     @Override
+    public void setGame(GameData game) throws DataAccessException {
+        throw new DataAccessException("not implemented lol");
+    }
+
+    @Override
     public int createGame(String gameName) {
         int gameID = games.size() + 1;
         String whiteUsername = null;

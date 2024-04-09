@@ -36,6 +36,14 @@ public class GameService {
         }
     }
 
+    public void setGame(GameData game){
+        try {
+            gameDAO.setGame(game);
+        } catch (DataAccessException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
     public GameData findGame(int gameID){
         try{
             return gameDAO.findGame(gameID);

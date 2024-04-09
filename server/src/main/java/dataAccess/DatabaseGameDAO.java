@@ -20,6 +20,21 @@ public class DatabaseGameDAO implements GameDAO{
         }
     }
 
+    public void setGame(GameData game) throws DataAccessException {
+        try (var conn = DatabaseManager.getConnection()) {
+            String statement = "UPDATE game_data SET game = ? WHERE game_ID = ?;";
+            try (var preparedStatement = conn.prepareStatement(statement)) {
+                String gameString = new Gson().toJson(game.game());
+                preparedStatement.setString(1, gameString);
+                preparedStatement.setInt(2, game.gameID());
+
+                preparedStatement.executeUpdate();
+            }
+        } catch (Exception e) {
+            throw new DataAccessException(String.format("Unable to save game to database: %s", e.getMessage()));
+        }
+    }
+
     @Override
     public GameData findGame(String gameName) throws DataAccessException {
         try (var conn = DatabaseManager.getConnection()) {
