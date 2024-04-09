@@ -75,8 +75,19 @@ public class GameService {
             }
 
             GameData gameSpecified = gameDAO.findGame(gameID);
-            boolean canInsertWhite = clientColor == ChessGame.TeamColor.WHITE && Objects.equals(gameSpecified.whiteUsername(), null);
-            boolean canInsertBlack = clientColor == ChessGame.TeamColor.BLACK && Objects.equals(gameSpecified.blackUsername(), null);
+            boolean canInsertWhite = false;
+            boolean canInsertBlack = false;
+            if(clientColor == ChessGame.TeamColor.WHITE){
+                if(Objects.equals(gameSpecified.whiteUsername(), null)
+                        || Objects.equals(gameSpecified.whiteUsername(), authToken.username())){
+                    canInsertWhite = true;
+                }
+            } else if (clientColor == ChessGame.TeamColor.BLACK) {
+                if(Objects.equals(gameSpecified.blackUsername(), null)
+                        || Objects.equals(gameSpecified.blackUsername(), authToken.username())){
+                    canInsertBlack = true;
+                }
+            }
             if(canInsertWhite || canInsertBlack){
                 return gameDAO.insertUser(gameID, clientColor, authToken.username());
             } else if(clientColor == null){
